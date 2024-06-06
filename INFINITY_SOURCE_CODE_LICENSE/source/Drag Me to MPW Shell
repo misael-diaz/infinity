@@ -1,1 +1,39 @@
-alias cd directorycd 'darkmoor:Infinity4Builds:source:'set CSeriesInterfaces 'darkmoor:Infinity4Builds:source:CSeriesInterfaces:'set CSeriesLibraries 'darkmoor:Infinity4Builds:source:CSeriesLibraries:'export CSeriesInterfacesexport CSeriesLibrariescd 'darkmoor:Infinity4Builds:source:cseries.lib:'buildprogram cseries.debug.xcoffbuildprogram cseries.xcoffcd 'darkmoor:Infinity4Builds:source:marathon2:'#buildprogram marathon2.spr.beta.ppcbuildprogram marathon2.spr.ppc# 4:28:50 PM ----- Build of marathon2.spr.ppc.# 4:28:50 PM ----- Analyzing dependencies.# 4:28:54 PM ----- Executing build commands.   MrC vbl_macintosh.c -i "darkmoor:Infinity4Builds:source:CSeriesInterfaces:" -opt speed,unroll -sym off -d GAME -d FINAL -d SPROCKETS -d SUPPORT_INPUT_SPROCKET -align mac68k -typecheck relaxed -o ":objects:game:ppc:sprocketfinal:"vbl_macintosh.ppc.oMrC C Compiler 2.0.2d1c8Copyright (C) 1994-1996 by Apple Computer, Inc.		return kISpButton_Up;		                    ^File "vbl_macintosh.c"; line 175 #Error: undefined identifier 'kISpButton_Up'#-----------------------		if (event.data != kISpButton_Down)				// if down mark the button as down and flush		                                 ^File "vbl_macintosh.c"; line 186 #Error: undefined identifier 'kISpButton_Down'#-----------------------				case _action_trigger_state;				                          ^File "vbl_macintosh.c"; line 257 #Error: ':' expected#-----------------------					if (key_state) { flags |= needs_to_flags };					                                         ^File "vbl_macintosh.c"; line 259 #Error: ';' expected#-----------------------### MPW Shell - Execution of marathon2.spr.ppc.makeout terminated.### MPW Shell - Execution of buildprogram terminated.
+alias cd directory
+cd 'darkmoor:Infinity4Builds:source:'
+set CSeriesInterfaces 'darkmoor:Infinity4Builds:source:CSeriesInterfaces:'
+set CSeriesLibraries 'darkmoor:Infinity4Builds:source:CSeriesLibraries:'
+export CSeriesInterfaces
+export CSeriesLibraries
+cd 'darkmoor:Infinity4Builds:source:cseries.lib:'
+buildprogram cseries.debug.xcoff
+buildprogram cseries.xcoff
+cd 'darkmoor:Infinity4Builds:source:marathon2:'
+#buildprogram marathon2.spr.beta.ppc
+buildprogram marathon2.spr.ppc
+
+# 4:28:50 PM ----- Build of marathon2.spr.ppc.
+# 4:28:50 PM ----- Analyzing dependencies.
+# 4:28:54 PM ----- Executing build commands.
+   MrC vbl_macintosh.c -i "darkmoor:Infinity4Builds:source:CSeriesInterfaces:" -opt speed,unroll -sym off -d GAME -d FINAL -d SPROCKETS -d SUPPORT_INPUT_SPROCKET -align mac68k -typecheck relaxed -o ":objects:game:ppc:sprocketfinal:"vbl_macintosh.ppc.o
+MrC C Compiler 2.0.2d1c8
+Copyright (C) 1994-1996 by Apple Computer, Inc.
+
+		return kISpButton_Up;
+		                    ^
+File "vbl_macintosh.c"; line 175 #Error: undefined identifier 'kISpButton_Up'
+
+#-----------------------
+		if (event.data != kISpButton_Down)				// if down mark the button as down and flush
+		                                 ^
+File "vbl_macintosh.c"; line 186 #Error: undefined identifier 'kISpButton_Down'
+#-----------------------
+				case _action_trigger_state;
+				                          ^
+File "vbl_macintosh.c"; line 257 #Error: ':' expected
+#-----------------------
+					if (key_state) { flags |= needs_to_flags };
+					                                         ^
+File "vbl_macintosh.c"; line 259 #Error: ';' expected
+#-----------------------
+### MPW Shell - Execution of marathon2.spr.ppc.makeout terminated.
+### MPW Shell - Execution of buildprogram terminated.

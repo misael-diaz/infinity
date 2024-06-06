@@ -1,1 +1,294 @@
-cd dos:infinity:marathon2:cd dos:infinity:cseries.lib:NewFolder :cseries:							# targets go hereNewFolder :cseries.lib:Objects:				# Our objects hierarchyNewFolder :cseries.lib:Objects:68k:NewFolder :cseries.lib:Objects:68k.debug:NewFolder :cseries.lib:Objects:ppc:NewFolder :cseries.lib:Objects:ppc.debug:cd dos:infinity:marathon2:set -e oldname marathon2.demo.fatset -e newname "Marathon ∞ Demo"set -e oldname marathon2.gamma.fatset -e newname "Marathon ∞ gamma"set -e oldname marathon2.beta.fatset -e newname "Marathon ∞ beta"set -e oldname marathon2.fatset -e newname "Marathon ∞"set -e buildtime "`date -s -d` 12:00 PM"noresnames "{oldname}"delete -y "{newname}"duplicate -d "{oldname}" "{newname}"echo "include ∂"{oldname}∂" not 'ckid';" | rez -align longword -o "{newname}"setfile -t APPL -c "26.∞" -a iB "{newname}" -m "{buildtime}" -d "{buildtime}"checkout -wexecute "{MPW}"UserStartup•Infinityexecute "{MPW}"UserStartup•ETO19execute "{MPW}"UserStartup•MrCcd dos:infinity:marathon2:mountserver "Piltdown Man:Dev:"mountproject Dev:infinity:checkoutdir -r -project `project` dos:infinity:addmenu Alex "Compare MRO" 'alexintegratemro "{Active}"'serial_numbers 1 0 65535 serials.out---------dumpxcoff :objects:game:ppc:beta:network_speaker.ppc.o -do t -m .fill_network_speaker_buffersearch '_game_of_rugby' ≈.hdumpxcoff :objects:game:ppc:beta:network_dialogs.ppc.o -do t -m .menu_item_to_game_typemodifyreadonly :binaries:marathon2.resource8399 preferredcd ::marathon2search 'update_player_keys_for_terminal' ≈.ccheckin -wfindlurkerscheckin -wset -e oldname "Crack Haüs:Infinity backup:Images"set -e newname "Crack Haüs:Infinity 9/9:Images"set -e buildtime "`date -s -d` 12:00 PM"noresnames "{oldname}"delete -y "{newname}"echo "include ∂"{oldname}∂" not 'ckid';" | rez -align longword -o "{newname}"setfile -t img2 -c '26.∞' "{newname}" -m "{buildtime}" -d "{buildtime}"set -e filename "Music"set -e oldname "Crack Haüs:Infinity 9/6:{filename}"set -e newname "Crack Haüs:Infinity 9/9:{filename}"delete -y "{newname}"duplicate -d "{oldname}" "{newname}"setfile -t mus2 -c '26.∞' -a c "{newname}" -m "{buildtime}" -d "{buildtime}"set -e filename "Shapes"set -e oldname "Crack Haüs:Infinity 9/6:{filename}"set -e newname "Crack Haüs:Infinity 9/9:{filename}"duplicate -d "{oldname}" "{newname}"setfile -t 'shp∞' -c '26.∞' "{newname}" -m "{buildtime}" -d "{buildtime}"set -e filename "Sounds"set -e oldname "Crack Haüs:Infinity 9/6:{filename}"set -e newname "Crack Haüs:Infinity 9/9:{filename}"duplicate -d "{oldname}" "{newname}"setfile -t 'snd∞' -c '26.∞' "{newname}" -m "{buildtime}" -d "{buildtime}"set -e filename "Map"set -e oldname "Crack Haüs:Infinity backup:{filename}"set -e newname "Crack Haüs:Infinity 9/9:{filename}"delete -y "{newname}"noresnames "{oldname}"duplicate -d "{oldname}" "{newname}"echo "include ∂"{oldname}∂" ('PICT');∂ninclude ∂"{oldname}∂" ('clut');" | rez -align longword -o "{newname}"setfile -t 'sce2' -c '26.∞' "{newname}" -m "{buildtime}" -d "{buildtime}"cd ::cseries.libcd ::marathon2setfile -m "{buildtime}" -d "{buildtime}" files -f "Crack Haüs:Infinity Demo Final:Large"setfile -m "{buildtime}" -d "{buildtime}" 'Crack Haüs:Infinity Demo Final:Large:Images'setfile -m "{buildtime}" -d "{buildtime}" 'Crack Haüs:Infinity Demo Final:Large:Map'setfile -m "{buildtime}" -d "{buildtime}" 'Crack Haüs:Infinity Demo Final:Large:Music'setfile -m "{buildtime}" -d "{buildtime}" 'Crack Haüs:Infinity Demo Final:Large:Shapes'setfile -m "{buildtime}" -d "{buildtime}" 'Crack Haüs:Infinity Demo Final:Large:Sounds'cd ::cseries.libbuildprogram macintosh_interfaces.dbuildprogram cseriescd ::marathon2buildprogram marathon2.demo.fatset -e oldname marathon2.demo.fatset -e newname "Marathon ∞ Demo"set -e buildtime "`date -s -d` 12:00 PM"noresnames "{oldname}"duplicate -d "{oldname}" "{newname}"echo "include ∂"{oldname}∂" not 'ckid';" | rez -align longword -o "{newname}"setfile -t APPL -c "26.∞" -a iB "{newname}" -m "{buildtime}" -d "{buildtime}"open demos.makeset -e DemoFiles "`files -f -r -s demos.demo`"set DemoFilesSet -e DemoFiles ''∂'':demos.demo:L02.Poor Yorick'∂'' :demos.demo:N04.Duality'make -f demos.make Demos.demo > makeoutmakeoutAdding demo from :demos.demo:L02.Poor Yorick...Adding demo from :demos.demo:N04.Duality...checkout -wdumpxcoff "{Desk}toxlc.o" -m ._texture_horizontal_polygon_lines8 -do t-------------setfile -m . scottish_textures.cdumpxcoff ":objects:demo:ppc:final:scottish_textures.s.o" -m ._texture_vertical_polygon_lines8 -do tsearch 'texture_rectangle' ≈.copen -n "{trash}foo"findlurkersMrC scottish_textures.c -i "Dos:infinity:cseries:" -opt speed -sym off -d FINAL -d DEMO -align mac68k -typecheck relaxed -o ":objects:demo:ppc:final:"scottish_textures.ppc.odumpxcoff ":objects:demo:ppc:final:scottish_textures.ppc.o" -m ._texture_vertical_polygon_lines8 -do tfindlurkersmountproject dos:infinitysprockets:infinity:checkoutdir -r dos:infinitysprockets2:cd dos:infinitysprockets2:ls:cseries.lib:         :marathon2:             'READ ME'        :CSeriesInterfaces:   'Drag Me to MPW Shell'  'Read Me Merge'  :CSeriesLibraries:    set CSeriesInterfaces ::CSeriesInterfaces:set CSeriesLibraries ::CSeriesLibraries:export CSeriesInterfacesexport CSeriesLibrariescd :cseries.lib:buildprogram cseries.debug.xcoff#buildprogram cseries.xcoffcd :marathon2:buildprogram marathon2.beta.ppc#buildprogram marathon2.ppcset -e DirA "Dos:infinitysprockets2:"set -e DirB "Dos:infinity:""{MPW}"alexcomparedir "{DirA}" "{DirB}"#CompareFiles -16 Dos:infinitysprockets2:cseries.lib:macintosh_utilities.c Dos:infinity:cseries.lib:macintosh_utilities.c#CompareFiles -16 Dos:infinitysprockets2:cseries.lib:makefile Dos:infinity:cseries.lib:makefile##CompareFiles -16 Dos:infinitysprockets2:marathon2:buildprogram Dos:infinity:marathon2:buildprogram###CompareFiles -16 Dos:infinitysprockets2:marathon2:fades.c Dos:infinity:marathon2:fades.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:game_window_macintosh.c Dos:infinity:marathon2:game_window_macintosh.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:images.c Dos:infinity:marathon2:images.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:input_sprocket_needs.h Dos:infinity:marathon2:input_sprocket_needs.h#CompareFiles -16 Dos:infinitysprockets2:marathon2:interface.c Dos:infinity:marathon2:interface.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:interface_macintosh.c Dos:infinity:marathon2:interface_macintosh.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:macintosh_input.h Dos:infinity:marathon2:macintosh_input.h#CompareFiles -16 Dos:infinitysprockets2:marathon2:makefile Dos:infinity:marathon2:makefile#CompareFiles -16 Dos:infinitysprockets2:marathon2:map_constructors.c Dos:infinity:marathon2:map_constructors.c###CompareFiles -16 Dos:infinitysprockets2:marathon2:marathon2.c Dos:infinity:marathon2:marathon2.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:marathon2.r Dos:infinity:marathon2:marathon2.r#CompareFiles -16 Dos:infinitysprockets2:marathon2:monsters.c Dos:infinity:marathon2:monsters.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:mouse.c Dos:infinity:marathon2:mouse.c#CompareFiles -16 Dos:infinitysprockets2:marathon2:network_microphone.c Dos:infinity:marathon2:network_microphone.c#CompareFiles -16 Dos:infinitysprockets2:marathon2:network_sound.h Dos:infinity:marathon2:network_sound.h#CompareFiles -16 Dos:infinitysprockets2:marathon2:network_speaker.c Dos:infinity:marathon2:network_speaker.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:preferences.c Dos:infinity:marathon2:preferences.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:screen.c Dos:infinity:marathon2:screen.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:screen.h Dos:infinity:marathon2:screen.h##CompareFiles -16 Dos:infinitysprockets2:marathon2:screen_drawing.c Dos:infinity:marathon2:screen_drawing.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:shell.c Dos:infinity:marathon2:shell.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:shell.h Dos:infinity:marathon2:shell.h## WARNING:  File Does not exist in second directory:  'Dos:infinitysprockets2:marathon2:SprocketsPrefix.h'## WARNING:  File Does not exist in second directory:  'Dos:infinitysprockets2:marathon2:SprocketsPrefixBeta.h'#CompareFiles -16 Dos:infinitysprockets2:marathon2:valkyrie.c Dos:infinity:marathon2:valkyrie.c##CompareFiles -16 Dos:infinitysprockets2:marathon2:vbl_macintosh.c Dos:infinity:marathon2:vbl_macintosh.cduplicate 'Dos:infinitysprockets2:marathon2:binaries:infinityInput.rsrc' Dos:infinity:marathon2:binaries:#duplicate 'Dos:infinitysprockets2:marathon2:binaries:SocketListener.rsrc' dos:infinity:marathon2:binaries:##comparefiles -16 dos:InfinitySprocketsDone:game_sound.c dos:infinity:marathon2:game_sound.c##comparefiles -16 dos:InfinitySprocketsDone:sound_macintosh.c dos:infinity:marathon2:sound_macintosh.cdumpfile -w 4 -g 4 -r 0,63 "Dos:myth:tags:public:.256:landscape"findlurkerssearch 'ask_for_serial_number' `files -f -r -s -t TEXT ≈.[ch]`findlurkerscd ::cseries.libbuildprogram macintosh_interfaces.dbuildprogram cseriescd ::marathon2buildprogram marathon2.fatset -e oldname marathon2.fatset -e newname "Marathon ∞ 1.2b20"set -e buildtime "`date -s -d` 12:00 PM"noresnames "{oldname}"duplicate -d "{oldname}" "{newname}"echo "include ∂"{oldname}∂" not 'ckid';" | rez -align longword -o "{newname}"setfile -t APPL -c "26.∞" -a iB "{newname}" -m "{buildtime}" -d "{buildtime}"##### HEY YOU!!!! DON'T FORGET TO CHANGE serial_numbers.c to the final pad. #######findlurkersFile Dos:infinity:marathon2:serial_numbers.c ### is ModifyReadOnly (3* vs. 3)#serial_numbers 1     0 10000 Infinity_serials.out#serial_numbers 1 10001 20000 Infinity_serials2.out#serial_numbers 1 20001 30000 Infinity_serials3.out#serial_numbers 1 30001 40000 Infinity_serials4.out#serial_numbers 1 40001 50000 Infinity_serials5.out#serial_numbers 1 50001 60000 Infinity_serials6.out#serial_numbers 1 60001 65535 Infinity_serials7.outbuildreleaseset -e sourceFolder "Crack Haüs:"set -e targetFolder "Dos:InfinityBuild:"set -e buildtime "9/16/96 12:00 PM"set -e majorVersion 0x01set -e minorVersion 0x20set -e releaseStage "release"set -e release 0x00set -e regionVersion "verUS"set -e shortVersion '1.2'set -e longVersion "∂"{shortVersion} © 1996 Bungie Software Products Corp.∂""set -e short2Version "∂"{shortVersion}∂""set -e long2Version "∂"Marathon Infinity∂""set -e filename "Map"set -e oldname "{sourceFolder}{filename}"set -e newname "{targetFolder}{filename}"delete -y "{newname}"noresnames "{oldname}"duplicate -d "{oldname}" "{newname}"echo "∂#include ∂"SysTypes.r∂"∂ninclude ∂"{oldname}∂" ('PICT');∂ninclude ∂"{oldname}∂" ('clut');∂nresource 'vers' (1) ∂{{majorVersion},{minorVersion},{releaseStage},{release},{regionVersion},∂"{shortVersion}∂",∂"{longVersion}∂"∂};∂nresource 'vers' (2) ∂{{majorVersion},{minorVersion},{releaseStage},{release},{regionVersion},∂"{short2Version}∂",∂"{long2Version}∂"∂};" | rez -align longword -o "{newname}"setfile -t 'sce2' -c '26.∞' "{newname}" -m "{buildtime}" -d "{buildtime}"setfile "Dos:InfinityBuild:Forge" -m "{buildtime}" -d "{buildtime}"findlurkersset -e sourceFolder "Dos:"set -e targetFolder "Dos:InfinityBuild:"set -e majorVersion 0x01set -e minorVersion 0x01set -e releaseStage "release"set -e release 0x00set -e regionVersion "verUS"set -e shortVersion '1.0.1'set -e longVersion "∂"{shortVersion} © 1996 Bungie Software Products Corp.∂""set -e short2Version "∂"{shortVersion}∂""set -e long2Version "∂"Marathon Infinity∂""set -e oldname "{sourceFolder}Forge 1.01"set -e newname "{targetFolder}Forge"set -e buildtime "9/16/96 12:00 PM"noresnames "{oldname}"duplicate -d "{oldname}" "{newname}"echo "∂#include ∂"SysTypes.r∂"∂ninclude ∂"{oldname}∂" not 'vers';∂nresource 'vers' (1) ∂{{majorVersion},{minorVersion},{releaseStage},{release},{regionVersion},∂"{shortVersion}∂",∂"{longVersion}∂"∂};∂nresource 'vers' (2) ∂{{majorVersion},{minorVersion},{releaseStage},{release},{regionVersion},∂"{short2Version}∂",∂"{long2Version}∂"∂};" | rez -align longword -o "{newname}"setfile -t APPL -c "khan" -a iB "{newname}" -m "{buildtime}" -d "{buildtime}"--------------------NameRevisions GoldenMaster -project infinity∫ -r -afindlurkers
+cd dos:infinity:marathon2:
+cd dos:infinity:cseries.lib:
+
+NewFolder :cseries:							# targets go here
+NewFolder :cseries.lib:Objects:				# Our objects hierarchy
+NewFolder :cseries.lib:Objects:68k:
+NewFolder :cseries.lib:Objects:68k.debug:
+NewFolder :cseries.lib:Objects:ppc:
+NewFolder :cseries.lib:Objects:ppc.debug:
+cd dos:infinity:marathon2:
+
+set -e oldname marathon2.demo.fat
+set -e newname "Marathon ∞ Demo"
+set -e oldname marathon2.gamma.fat
+set -e newname "Marathon ∞ gamma"
+set -e oldname marathon2.beta.fat
+set -e newname "Marathon ∞ beta"
+set -e oldname marathon2.fat
+set -e newname "Marathon ∞"
+set -e buildtime "`date -s -d` 12:00 PM"
+noresnames "{oldname}"
+delete -y "{newname}"
+duplicate -d "{oldname}" "{newname}"
+echo "include ∂"{oldname}∂" not 'ckid';" | rez -align longword -o "{newname}"
+setfile -t APPL -c "26.∞" -a iB "{newname}" -m "{buildtime}" -d "{buildtime}"
+checkout -w
+
+execute "{MPW}"UserStartup•Infinity
+execute "{MPW}"UserStartup•ETO19
+execute "{MPW}"UserStartup•MrC
+cd dos:infinity:marathon2:
+mountserver "Piltdown Man:Dev:"
+mountproject Dev:infinity:
+checkoutdir -r -project `project` dos:infinity:
+
+addmenu Alex "Compare MRO" 'alexintegratemro "{Active}"'
+
+serial_numbers 1 0 65535 serials.out
+
+---------
+dumpxcoff :objects:game:ppc:beta:network_speaker.ppc.o -do t -m .fill_network_speaker_buffer
+search '_game_of_rugby' ≈.h
+dumpxcoff :objects:game:ppc:beta:network_dialogs.ppc.o -do t -m .menu_item_to_game_type
+modifyreadonly :binaries:marathon2.resource
+
+
+8399 preferred
+
+cd ::marathon2
+
+search 'update_player_keys_for_terminal' ≈.c
+checkin -w
+findlurkers
+checkin -w
+
+set -e oldname "Crack Haüs:Infinity backup:Images"
+set -e newname "Crack Haüs:Infinity 9/9:Images"
+set -e buildtime "`date -s -d` 12:00 PM"
+noresnames "{oldname}"
+delete -y "{newname}"
+echo "include ∂"{oldname}∂" not 'ckid';" | rez -align longword -o "{newname}"
+setfile -t img2 -c '26.∞' "{newname}" -m "{buildtime}" -d "{buildtime}"
+
+set -e filename "Music"
+set -e oldname "Crack Haüs:Infinity 9/6:{filename}"
+set -e newname "Crack Haüs:Infinity 9/9:{filename}"
+delete -y "{newname}"
+duplicate -d "{oldname}" "{newname}"
+setfile -t mus2 -c '26.∞' -a c "{newname}" -m "{buildtime}" -d "{buildtime}"
+
+set -e filename "Shapes"
+set -e oldname "Crack Haüs:Infinity 9/6:{filename}"
+set -e newname "Crack Haüs:Infinity 9/9:{filename}"
+duplicate -d "{oldname}" "{newname}"
+setfile -t 'shp∞' -c '26.∞' "{newname}" -m "{buildtime}" -d "{buildtime}"
+
+set -e filename "Sounds"
+set -e oldname "Crack Haüs:Infinity 9/6:{filename}"
+set -e newname "Crack Haüs:Infinity 9/9:{filename}"
+duplicate -d "{oldname}" "{newname}"
+setfile -t 'snd∞' -c '26.∞' "{newname}" -m "{buildtime}" -d "{buildtime}"
+
+set -e filename "Map"
+set -e oldname "Crack Haüs:Infinity backup:{filename}"
+set -e newname "Crack Haüs:Infinity 9/9:{filename}"
+delete -y "{newname}"
+noresnames "{oldname}"
+duplicate -d "{oldname}" "{newname}"
+echo "include ∂"{oldname}∂" ('PICT');∂ninclude ∂"{oldname}∂" ('clut');" | rez -align longword -o "{newname}"
+setfile -t 'sce2' -c '26.∞' "{newname}" -m "{buildtime}" -d "{buildtime}"
+
+cd ::cseries.lib
+cd ::marathon2
+
+setfile -m "{buildtime}" -d "{buildtime}" 
+files -f "Crack Haüs:Infinity Demo Final:Large"
+setfile -m "{buildtime}" -d "{buildtime}" 'Crack Haüs:Infinity Demo Final:Large:Images'
+setfile -m "{buildtime}" -d "{buildtime}" 'Crack Haüs:Infinity Demo Final:Large:Map'
+setfile -m "{buildtime}" -d "{buildtime}" 'Crack Haüs:Infinity Demo Final:Large:Music'
+setfile -m "{buildtime}" -d "{buildtime}" 'Crack Haüs:Infinity Demo Final:Large:Shapes'
+setfile -m "{buildtime}" -d "{buildtime}" 'Crack Haüs:Infinity Demo Final:Large:Sounds'
+
+cd ::cseries.lib
+buildprogram macintosh_interfaces.d
+buildprogram cseries
+cd ::marathon2
+buildprogram marathon2.demo.fat
+set -e oldname marathon2.demo.fat
+set -e newname "Marathon ∞ Demo"
+set -e buildtime "`date -s -d` 12:00 PM"
+noresnames "{oldname}"
+duplicate -d "{oldname}" "{newname}"
+echo "include ∂"{oldname}∂" not 'ckid';" | rez -align longword -o "{newname}"
+setfile -t APPL -c "26.∞" -a iB "{newname}" -m "{buildtime}" -d "{buildtime}"
+
+open demos.make
+
+set -e DemoFiles "`files -f -r -s demos.demo`"
+
+set DemoFiles
+Set -e DemoFiles ''∂'':demos.demo:L02.Poor Yorick'∂'' :demos.demo:N04.Duality'
+
+
+make -f demos.make Demos.demo > makeout
+makeout
+
+Adding demo from :demos.demo:L02.Poor Yorick...
+Adding demo from :demos.demo:N04.Duality...
+checkout -w
+
+dumpxcoff "{Desk}toxlc.o" -m ._texture_horizontal_polygon_lines8 -do t
+-------------
+setfile -m . scottish_textures.c
+
+dumpxcoff ":objects:demo:ppc:final:scottish_textures.s.o" -m ._texture_vertical_polygon_lines8 -do t
+search 'texture_rectangle' ≈.c
+open -n "{trash}foo"
+
+findlurkers
+MrC scottish_textures.c -i "Dos:infinity:cseries:" -opt speed -sym off -d FINAL -d DEMO -align mac68k -typecheck relaxed -o ":objects:demo:ppc:final:"scottish_textures.ppc.o
+dumpxcoff ":objects:demo:ppc:final:scottish_textures.ppc.o" -m ._texture_vertical_polygon_lines8 -do t
+
+findlurkers
+
+mountproject dos:infinitysprockets:infinity:
+checkoutdir -r dos:infinitysprockets2:
+cd dos:infinitysprockets2:
+
+ls
+:cseries.lib:         :marathon2:             'READ ME'        
+:CSeriesInterfaces:   'Drag Me to MPW Shell'  'Read Me Merge'  
+:CSeriesLibraries:    
+
+set CSeriesInterfaces ::CSeriesInterfaces:
+set CSeriesLibraries ::CSeriesLibraries:
+export CSeriesInterfaces
+export CSeriesLibraries
+cd :cseries.lib:
+buildprogram cseries.debug.xcoff
+#buildprogram cseries.xcoff
+cd :marathon2:
+buildprogram marathon2.beta.ppc
+#buildprogram marathon2.ppc
+
+set -e DirA "Dos:infinitysprockets2:"
+set -e DirB "Dos:infinity:"
+"{MPW}"alexcomparedir "{DirA}" "{DirB}"
+
+#CompareFiles -16 Dos:infinitysprockets2:cseries.lib:macintosh_utilities.c Dos:infinity:cseries.lib:macintosh_utilities.c
+#CompareFiles -16 Dos:infinitysprockets2:cseries.lib:makefile Dos:infinity:cseries.lib:makefile
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:buildprogram Dos:infinity:marathon2:buildprogram
+###CompareFiles -16 Dos:infinitysprockets2:marathon2:fades.c Dos:infinity:marathon2:fades.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:game_window_macintosh.c Dos:infinity:marathon2:game_window_macintosh.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:images.c Dos:infinity:marathon2:images.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:input_sprocket_needs.h Dos:infinity:marathon2:input_sprocket_needs.h
+#CompareFiles -16 Dos:infinitysprockets2:marathon2:interface.c Dos:infinity:marathon2:interface.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:interface_macintosh.c Dos:infinity:marathon2:interface_macintosh.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:macintosh_input.h Dos:infinity:marathon2:macintosh_input.h
+#CompareFiles -16 Dos:infinitysprockets2:marathon2:makefile Dos:infinity:marathon2:makefile
+#CompareFiles -16 Dos:infinitysprockets2:marathon2:map_constructors.c Dos:infinity:marathon2:map_constructors.c
+###CompareFiles -16 Dos:infinitysprockets2:marathon2:marathon2.c Dos:infinity:marathon2:marathon2.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:marathon2.r Dos:infinity:marathon2:marathon2.r
+#CompareFiles -16 Dos:infinitysprockets2:marathon2:monsters.c Dos:infinity:marathon2:monsters.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:mouse.c Dos:infinity:marathon2:mouse.c
+#CompareFiles -16 Dos:infinitysprockets2:marathon2:network_microphone.c Dos:infinity:marathon2:network_microphone.c
+#CompareFiles -16 Dos:infinitysprockets2:marathon2:network_sound.h Dos:infinity:marathon2:network_sound.h
+#CompareFiles -16 Dos:infinitysprockets2:marathon2:network_speaker.c Dos:infinity:marathon2:network_speaker.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:preferences.c Dos:infinity:marathon2:preferences.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:screen.c Dos:infinity:marathon2:screen.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:screen.h Dos:infinity:marathon2:screen.h
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:screen_drawing.c Dos:infinity:marathon2:screen_drawing.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:shell.c Dos:infinity:marathon2:shell.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:shell.h Dos:infinity:marathon2:shell.h
+## WARNING:  File Does not exist in second directory:  'Dos:infinitysprockets2:marathon2:SprocketsPrefix.h'
+## WARNING:  File Does not exist in second directory:  'Dos:infinitysprockets2:marathon2:SprocketsPrefixBeta.h'
+#CompareFiles -16 Dos:infinitysprockets2:marathon2:valkyrie.c Dos:infinity:marathon2:valkyrie.c
+##CompareFiles -16 Dos:infinitysprockets2:marathon2:vbl_macintosh.c Dos:infinity:marathon2:vbl_macintosh.c
+
+duplicate 'Dos:infinitysprockets2:marathon2:binaries:infinityInput.rsrc' Dos:infinity:marathon2:binaries:
+
+#duplicate 'Dos:infinitysprockets2:marathon2:binaries:SocketListener.rsrc' dos:infinity:marathon2:binaries:
+
+##comparefiles -16 dos:InfinitySprocketsDone:game_sound.c dos:infinity:marathon2:game_sound.c
+##comparefiles -16 dos:InfinitySprocketsDone:sound_macintosh.c dos:infinity:marathon2:sound_macintosh.c
+
+dumpfile -w 4 -g 4 -r 0,63 "Dos:myth:tags:public:.256:landscape"
+
+findlurkers
+
+search 'ask_for_serial_number' `files -f -r -s -t TEXT ≈.[ch]`
+
+findlurkers
+
+cd ::cseries.lib
+buildprogram macintosh_interfaces.d
+buildprogram cseries
+cd ::marathon2
+buildprogram marathon2.fat
+set -e oldname marathon2.fat
+set -e newname "Marathon ∞ 1.2b20"
+set -e buildtime "`date -s -d` 12:00 PM"
+noresnames "{oldname}"
+duplicate -d "{oldname}" "{newname}"
+echo "include ∂"{oldname}∂" not 'ckid';" | rez -align longword -o "{newname}"
+setfile -t APPL -c "26.∞" -a iB "{newname}" -m "{buildtime}" -d "{buildtime}"
+
+##### HEY YOU!!!! DON'T FORGET TO CHANGE serial_numbers.c to the final pad. #######
+
+
+findlurkers
+File Dos:infinity:marathon2:serial_numbers.c ### is ModifyReadOnly (3* vs. 3)
+
+#serial_numbers 1     0 10000 Infinity_serials.out
+#serial_numbers 1 10001 20000 Infinity_serials2.out
+#serial_numbers 1 20001 30000 Infinity_serials3.out
+#serial_numbers 1 30001 40000 Infinity_serials4.out
+#serial_numbers 1 40001 50000 Infinity_serials5.out
+#serial_numbers 1 50001 60000 Infinity_serials6.out
+#serial_numbers 1 60001 65535 Infinity_serials7.out
+
+buildrelease
+
+
+set -e sourceFolder "Crack Haüs:"
+set -e targetFolder "Dos:InfinityBuild:"
+set -e buildtime "9/16/96 12:00 PM"
+
+set -e majorVersion 0x01
+set -e minorVersion 0x20
+set -e releaseStage "release"
+set -e release 0x00
+set -e regionVersion "verUS"
+set -e shortVersion '1.2'
+set -e longVersion "∂"{shortVersion} © 1996 Bungie Software Products Corp.∂""
+set -e short2Version "∂"{shortVersion}∂""
+set -e long2Version "∂"Marathon Infinity∂""
+
+set -e filename "Map"
+set -e oldname "{sourceFolder}{filename}"
+set -e newname "{targetFolder}{filename}"
+delete -y "{newname}"
+noresnames "{oldname}"
+duplicate -d "{oldname}" "{newname}"
+echo "∂#include ∂"SysTypes.r∂"∂ninclude ∂"{oldname}∂" ('PICT');∂ninclude ∂"{oldname}∂" ('clut');∂nresource 'vers' (1) ∂{{majorVersion},{minorVersion},{releaseStage},{release},{regionVersion},∂"{shortVersion}∂",∂"{longVersion}∂"∂};∂nresource 'vers' (2) ∂{{majorVersion},{minorVersion},{releaseStage},{release},{regionVersion},∂"{short2Version}∂",∂"{long2Version}∂"∂};" | rez -align longword -o "{newname}"
+setfile -t 'sce2' -c '26.∞' "{newname}" -m "{buildtime}" -d "{buildtime}"
+
+setfile "Dos:InfinityBuild:Forge" -m "{buildtime}" -d "{buildtime}"
+
+
+findlurkers
+
+set -e sourceFolder "Dos:"
+set -e targetFolder "Dos:InfinityBuild:"
+
+set -e majorVersion 0x01
+set -e minorVersion 0x01
+set -e releaseStage "release"
+set -e release 0x00
+set -e regionVersion "verUS"
+set -e shortVersion '1.0.1'
+set -e longVersion "∂"{shortVersion} © 1996 Bungie Software Products Corp.∂""
+set -e short2Version "∂"{shortVersion}∂""
+set -e long2Version "∂"Marathon Infinity∂""
+
+set -e oldname "{sourceFolder}Forge 1.01"
+set -e newname "{targetFolder}Forge"
+set -e buildtime "9/16/96 12:00 PM"
+noresnames "{oldname}"
+duplicate -d "{oldname}" "{newname}"
+echo "∂#include ∂"SysTypes.r∂"∂ninclude ∂"{oldname}∂" not 'vers';∂nresource 'vers' (1) ∂{{majorVersion},{minorVersion},{releaseStage},{release},{regionVersion},∂"{shortVersion}∂",∂"{longVersion}∂"∂};∂nresource 'vers' (2) ∂{{majorVersion},{minorVersion},{releaseStage},{release},{regionVersion},∂"{short2Version}∂",∂"{long2Version}∂"∂};" | rez -align longword -o "{newname}"
+setfile -t APPL -c "khan" -a iB "{newname}" -m "{buildtime}" -d "{buildtime}"
+--------------------
+NameRevisions GoldenMaster -project infinity∫ -r -a
+findlurkers
