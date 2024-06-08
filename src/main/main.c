@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 
@@ -20,22 +21,22 @@ enum TAG {
 };
 
 struct tag {
-	size_t tag;
-	size_t length;
-	size_t offset;
+	uint64_t tag;
+	uint64_t length;
+	uint64_t offset;
 	byte *data;
 };
 
 struct wad {
 	struct tag *tag;
 	byte *read_only_data;
-	short num_wads;
-	short pad;
+	int16_t num_wads;
+	int16_t pad;
 };
 
 struct FileDescriptor {
-	size_t id;
-	short reference_number;
+	uint64_t id;
+	int16_t reference_number;
 	byte name[FD_NAME_SIZE];
 };
 
@@ -45,19 +46,19 @@ struct preferences {
 };
 
 struct player_preferences {
-	size_t last_time_exec;
-	short difficulty_level;
-	short color;
-	short team;
+	uint64_t last_time_exec;
+	int16_t difficulty_level;
+	int16_t color;
+	int16_t team;
 	char name[PREFERENCES_NAME_SIZE];
 	bool background_music_enabled;
 };
 
 static struct preferences *preferences = NULL;
 
-void *wad_extractTypeFromWad(size_t *length, struct wad const *wad, size_t wadDataType);
-void *wad_getDataFromPreferences(size_t preferences,
-				 size_t expected_size,
+void *wad_extractTypeFromWad(uint64_t *length, struct wad const *wad, uint64_t wadDataType);
+void *wad_getDataFromPreferences(uint64_t preferences,
+				 uint64_t expected_size,
 				 void (*initialize) (void *prefs),
 				 bool (*validate) (void *prefs));
 
@@ -66,11 +67,11 @@ int main (void)
 	return 0;
 }
 
-void *wad_extractTypeFromWad (size_t *length, struct wad const *wad, size_t wadDataType)
+void *wad_extractTypeFromWad (uint64_t *length, struct wad const *wad, uint64_t wadDataType)
 {
-	*length = ((size_t) 0);
+	*length = ((uint64_t) 0);
 	void *data = NULL;
-	for (short i = 0; i != wad->num_wads; ++i) {
+	for (int16_t i = 0; i != wad->num_wads; ++i) {
 		if (wad->tag[i].tag == wadDataType) {
 			data = wad->tag[i].data;
 			*length = wad->tag[i].length;
@@ -80,8 +81,8 @@ void *wad_extractTypeFromWad (size_t *length, struct wad const *wad, size_t wadD
 	return data;
 }
 
-void *wad_getDataFromPreferences (size_t tag,
-				  size_t expected_size,
+void *wad_getDataFromPreferences (uint64_t tag,
+				  uint64_t expected_size,
 				  void (*initialize) (void *prefs),
 				  bool (*validate) (void *prefs))
 {
