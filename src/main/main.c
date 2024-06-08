@@ -85,15 +85,6 @@ void *wad_getDataFromPreferences (size_t tag,
 				  void (*initialize) (void *prefs),
 				  bool (*validate) (void *prefs))
 {
-	short FileError;
-	bool success = true;
-	preferences = (struct preferences*) malloc(sizeof(*preferences));
-	if (!preferences) {
-		return NULL;
-	}
-
-	memset(preferences, 0, sizeof(*preferences));
-
 	return NULL;
 }
 
