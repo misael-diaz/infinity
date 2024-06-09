@@ -10,6 +10,9 @@
 #define PREFERENCES_NAME_SIZE (PREFERENCES_NAME_LEN + 1)
 #define FD_NAME_LEN MAX_WADFILE_NAME_LEN
 #define FD_NAME_SIZE (FD_NAME_LEN + 1)
+#define LEVEL_NAME_LEN MAX_WADFILE_NAME_LEN
+#define LEVEL_NAME_SIZE (LEVEL_NAME_LEN + 1)
+#define MAX_OBJECT_TYPES 64
 
 enum TAG {
 	NETWORK_TAG,
@@ -72,6 +75,74 @@ struct player_preferences {
 
 static struct preferences *preferences = NULL;
 
+struct data_static {
+        uint64_t entry_point_flags;
+        int16_t environment_code;
+        int16_t physics_model;
+        int16_t song_index;
+        int16_t mission_flags;
+        int16_t environment_flags;
+        int16_t explicit_padding_int16_t[3];
+        char level_name[LEVEL_NAME_SIZE];
+        char explicit_padding_char[40];
+};
+
+struct world_point2d {
+	int16_t x;
+	int16_t y;
+};
+
+struct data_game {
+        uint64_t game_time_remaining;
+        int32_t initial_random_seed;
+        int16_t game_type;
+        int16_t game_options;
+        int16_t kill_limit;
+        int16_t difficulty_level;
+        int16_t parameters[2];
+};
+
+struct data_dynamic {
+	struct data_game game_information;
+	struct world_point2d game_beacon;
+	uint64_t tick_count;
+	uint32_t random_seed;
+	int16_t player_count;
+	int16_t speaking_player_index;
+	int16_t unused;
+	int16_t platform_count;
+	int16_t endpoint_count;
+	int16_t line_count;
+	int16_t side_count;
+	int16_t polygon_count;
+	int16_t lightsource_count;
+	int16_t map_index_count;
+	int16_t ambient_sound_image_count, random_sound_image_count;
+	int16_t object_count;
+	int16_t monster_count;
+	int16_t projectile_count;
+	int16_t effect_count;
+	int16_t light_count;
+	int16_t default_annotation_count;
+	int16_t personal_annotation_count;
+	int16_t initial_objects_count;
+	int16_t garbage_object_count;
+	int16_t last_monster_index_to_get_time, last_monster_index_to_build_path;
+	int16_t new_monster_mangler_cookie, new_monster_vanishing_cookie;
+	int16_t civilians_killed_by_players;
+	int16_t random_monsters_left[MAX_OBJECT_TYPES];
+	int16_t current_monster_count[MAX_OBJECT_TYPES];
+	int16_t random_items_left[MAX_OBJECT_TYPES];
+	int16_t current_item_count[MAX_OBJECT_TYPES];
+	int16_t current_level_number;
+	int16_t current_civilian_causalties, current_civilian_count;
+	int16_t total_civilian_causalties, total_civilian_count;
+	int16_t game_player_index;
+};
+
+static struct data_static *world_static = NULL;
+static struct data_dynamic *world_dynamic = NULL;
+
 void *wad_extractTypeFromWad(uint64_t *length, struct wad const *wad, uint64_t wadDataType);
 void *wad_getDataFromPreferences(uint64_t preferences,
 				 uint64_t expected_size,
@@ -93,6 +164,7 @@ void wad_createEmptyWad(struct wad *wad);
 
 int main (void)
 {
+	printf("sizeof(struct data_static): %zu\n", sizeof(struct data_static));
 	printf("sizeof(struct wad_header): %zu\n", sizeof(struct wad_header));
 	char wadfile[FD_NAME_SIZE] = WAD_FILENAME;
 	FILE *file = fopen(wadfile, "w");
@@ -205,6 +277,12 @@ void wad_writeWadHeader (struct FileDescriptor *fd, struct wad_header *header)
 void wad_createEmptyWad (struct wad *wad)
 {
 	memset(wad, 0, sizeof(*wad));
+}
+
+void allocate_memory_map (void)
+{
+	world_static = (struct data_static*) malloc(sizeof(struct data_static));
+	world_dynamic = (struct data_dynamic*) malloc(sizeof(struct data_dynamic));
 }
 
 /*
