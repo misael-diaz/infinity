@@ -2,4 +2,5 @@
 *.swp
 *.swo
 *.bin
+*.dat
 *.o
