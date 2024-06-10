@@ -434,6 +434,10 @@ bool wad_writeWad (struct FileDescriptor *fd,
 	size_t bytes = 0;
 	uint64_t running_offset = 0;
 	struct entry_header header;
+	size_t sz_h = fwrite(file_header, 1, sizeof(*file_header), fd->handle);
+	if (sz_h != sizeof(*file_header)) {
+		return false;
+	}
 	for (int16_t i = 0; i != wad->num_tags; ++i) {
 		header.tag = wad->tag[i].tag;
 		header.length = wad->tag[i].length;
