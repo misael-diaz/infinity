@@ -79,7 +79,8 @@ void *Util_Malloc (size_t const sz)
 	void *p = malloc(size);
 	if (!p) {
 		fprintf(stderr, "Util_Malloc: %s\n", strerror(errno));
-		return NULL;
+		Util_Clear();
+		exit(EXIT_FAILURE);
 	}
 
 	m_chain_t* node = (m_chain_t*) p;

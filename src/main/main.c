@@ -372,6 +372,7 @@ int main (void)
 	FILE *file = fopen(wadfile, "w");
 	if (!file) {
 		printf("main: IO ERROR\n");
+		Util_Clear();
 		exit(EXIT_FAILURE);
 	}
 
@@ -391,6 +392,7 @@ int main (void)
 	wad_writeWadHeader(&fd, &header);
 	wad_writeWad(&fd, &header, &wad, offset);
 	fclose(file);
+	Util_Clear();
 	return 0;
 }
 
@@ -477,7 +479,9 @@ void wad_writeWadHeader (struct FileDescriptor *fd, struct wad_header *header)
 	size_t bytes_written = fwrite(header, 1, sizeof(*header), fd->handle);
 	if (bytes_written != sizeof(*header)) {
 		printf("wad_writeWadHeader: unexpected IO Error!");
-		return;
+		fclose(fd->handle);
+		Util_Clear();
+		exit(EXIT_FAILURE);
 	}
 	printf("wad_writeWadHeader: bytes-written: %zu\n", bytes_written);
 }
@@ -489,18 +493,18 @@ void wad_createEmptyWad (struct wad *wad)
 
 void allocate_memory_map (void)
 {
-	world_static = (struct data_static*) malloc(sizeof(struct data_static));
-	world_dynamic = (struct data_dynamic*) malloc(sizeof(struct data_dynamic));
+	world_static = (struct data_static*) Util_Malloc(sizeof(struct data_static));
+	world_dynamic = (struct data_dynamic*) Util_Malloc(sizeof(struct data_dynamic));
 	size_t sz_enemies = MAX_ENEMIES_PER_MAP * sizeof(struct data_enemy);
-	enemies = (struct data_enemy*) malloc(sz_enemies);
+	enemies = (struct data_enemy*) Util_Malloc(sz_enemies);
 	size_t sz_projectiles = MAX_PROJECTILES_PER_MAP * sizeof(struct data_projectile);
-	projectiles = (struct data_projectile*) malloc(sz_projectiles);
+	projectiles = (struct data_projectile*) Util_Malloc(sz_projectiles);
 	size_t sz_objects = MAX_OBJECTS_PER_MAP * sizeof(struct data_object);
-	objects = (struct data_object*) malloc(sz_objects);
+	objects = (struct data_object*) Util_Malloc(sz_objects);
 	size_t sz_platforms = MAX_PLATFORMS_PER_MAP * sizeof(struct data_platform);
-	platforms = (struct data_platform*) malloc(sz_platforms);
+	platforms = (struct data_platform*) Util_Malloc(sz_platforms);
 	size_t sz_players = MAX_NUM_PLAYERS * sizeof(struct data_player);
-	players = (struct data_player*) malloc(sz_players);
+	players = (struct data_player*) Util_Malloc(sz_players);
 }
 
 /*
