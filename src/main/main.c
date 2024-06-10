@@ -6,6 +6,8 @@
 
 #define MAX_WADFILE_NAME_LEN 63
 #define MAX_WADFILE_NAME_SIZE (MAX_WADFILE_NAME_LEN + 1)
+#define MAX_PLAYER_NAME_LEN MAX_WADFILE_NAME_LEN
+#define MAX_PLAYER_NAME_SIZE (MAX_WADFILE_NAME_LEN + 1)
 #define PREFERENCES_NAME_LEN 255
 #define PREFERENCES_NAME_SIZE (PREFERENCES_NAME_LEN + 1)
 #define FD_NAME_LEN MAX_WADFILE_NAME_LEN
@@ -18,6 +20,8 @@
 #define MAX_PLATFORMS_PER_MAP 64
 #define MAX_OBJECTS_PER_MAP 512
 #define MAX_VERTICES_PER_POLYGON 8
+#define MAX_NUM_PLAYERS 8
+#define NUM_ITEMS 64
 
 enum TAG {
 	NETWORK_TAG,
@@ -188,6 +192,90 @@ struct data_platform {
 	char explicit_padding[28];
 };
 
+struct action_queue {
+        int64_t *buffer;
+        int16_t read_index;
+	int16_t write_index;
+	char explicit_padding[4];
+};
+
+struct damage_record {
+	uint64_t damage;
+	int16_t kills;
+};
+
+struct vector3d {
+	int16_t x;
+	int16_t y;
+	int16_t z;
+};
+
+struct physics_variables {
+	struct world_point3d last_position;
+	struct world_point3d position;
+	struct vector3d external_velocity;
+	int16_t head_direction;
+	int16_t last_direction;
+	int16_t direction;
+	int16_t elevation;
+	int16_t angular_velocity;
+	int16_t vertical_angular_velocity;
+	int16_t velocity;
+	int16_t perpendicular_velocity;
+	int16_t actual_height;
+	int16_t adjusted_pitch;
+	int16_t adjusted_yaw;
+	int16_t external_angular_velocity;
+	int16_t step_phase;
+	int16_t step_amplitude;
+	int16_t floor_height;
+	int16_t ceiling_height;
+	int16_t media_height;
+	int16_t action;
+	int16_t old_flags;
+	int16_t flags;
+};
+
+struct data_player {
+	struct damage_record damage_taken[MAX_NUM_PLAYERS];
+	struct physics_variables variables;
+	struct damage_record total_damage_given;
+	struct damage_record monster_damage_taken;
+	struct damage_record monster_damage_given;
+	struct world_point3d location;
+	struct world_point3d camera_location;
+	int16_t items[NUM_ITEMS];
+	uint64_t ticks_at_last_successful_save;
+	uint64_t netgame_parameters[2];
+	int16_t identifier;
+	int16_t flags;
+	int16_t color;
+	int16_t team;
+	int16_t camera_polygon_index;
+	int16_t facing, elevation;
+	int16_t supporting_polygon_index;
+	int16_t last_supporting_polygon_index;
+	int16_t suit_energy, suit_oxygen;
+	int16_t monster_index;
+	int16_t object_index;
+	int16_t weapon_intensity_decay;
+	int16_t weapon_intensity;
+	int16_t invisibility_duration;
+	int16_t invincibility_duration;
+	int16_t infravision_duration;
+	int16_t extravision_duration;
+	int16_t delay_before_teleport;
+	int16_t teleporting_phase;
+	int16_t teleporting_destination;
+	int16_t interlevel_teleport_phase;
+	int16_t interface_flags;
+	int16_t interface_decay;
+	int16_t reincarnation_delay;
+	int16_t control_panel_side_index;
+	char name[MAX_PLAYER_NAME_SIZE];
+	char explicit_padding[498];
+};
+
 struct data_game {
         uint64_t game_time_remaining;
         int32_t initial_random_seed;
@@ -247,6 +335,7 @@ static struct data_enemy *enemies = NULL;
 static struct data_projectile *projectiles = NULL;
 static struct data_object *objects = NULL;
 static struct data_platform *platforms = NULL;
+static struct data_player *players = NULL;
 
 void *wad_extractTypeFromWad(uint64_t *length, struct wad const *wad, uint64_t wadDataType);
 void *wad_getDataFromPreferences(uint64_t preferences,
@@ -269,6 +358,8 @@ void wad_createEmptyWad(struct wad *wad);
 
 int main (void)
 {
+	printf("sizeof(struct action_queue): %zu\n", sizeof(struct action_queue));
+	printf("sizeof(struct data_player): %zu\n", sizeof(struct data_player));
 	printf("sizeof(struct data_enemy): %zu\n", sizeof(struct data_enemy));
 	printf("sizeof(struct data_projectile): %zu\n", sizeof(struct data_projectile));
 	printf("sizeof(struct data_platform): %zu\n", sizeof(struct data_platform));
@@ -400,6 +491,8 @@ void allocate_memory_map (void)
 	objects = (struct data_object*) malloc(sz_objects);
 	size_t sz_platforms = MAX_PLATFORMS_PER_MAP * sizeof(struct data_platform);
 	platforms = (struct data_platform*) malloc(sz_platforms);
+	size_t sz_players = MAX_NUM_PLAYERS * sizeof(struct data_player);
+	players = (struct data_player*) malloc(sz_players);
 }
 
 /*
