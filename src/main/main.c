@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "util.h"
+
 #define MAX_WADFILE_NAME_LEN 63
 #define MAX_WADFILE_NAME_SIZE (MAX_WADFILE_NAME_LEN + 1)
 #define MAX_PLAYER_NAME_LEN MAX_WADFILE_NAME_LEN

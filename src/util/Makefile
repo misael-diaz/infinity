@@ -1,25 +1,25 @@
 #!/usr/bin/make
 #
-# Infinity				June 07, 2024
+# Infinity						June 07, 2024
 #
-# source: Makefile
+# source: src/util/Makefile
 # author: @misael-diaz
 #
 # Synopsis:
 # Defines the Makefile for building the program with GNU make.
 #
-# Copyright (c) 2024 Misael Diaz-Maldonado
+# Copyright (c) 2024 Misael Díaz-Maldonado
 # This file is released under the GNU General Public License as published
 # by the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 
-all: infinity
+include make-inc
 
-utils:
-	@$(MAKE) -C util
-infinity: utils
-	@$(MAKE) -C main
+all: $(UTIL_O)
+
+$(UTIL_O): $(HEADERS) $(UTIL_C)
+	$(CC) $(INC) $(CCOPT) -c $(UTIL_C) -o $(UTIL_O)
+
 clean:
-	@$(MAKE) -C util clean
-	@$(MAKE) -C main clean
+	/bin/rm -f *.o
