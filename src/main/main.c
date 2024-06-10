@@ -13,6 +13,11 @@
 #define LEVEL_NAME_LEN MAX_WADFILE_NAME_LEN
 #define LEVEL_NAME_SIZE (LEVEL_NAME_LEN + 1)
 #define MAX_OBJECT_TYPES 64
+#define MAX_ENEMIES_PER_MAP 256
+#define MAX_PROJECTILES_PER_MAP 32
+#define MAX_PLATFORMS_PER_MAP 64
+#define MAX_OBJECTS_PER_MAP 512
+#define MAX_VERTICES_PER_POLYGON 8
 
 enum TAG {
 	NETWORK_TAG,
@@ -92,6 +97,97 @@ struct world_point2d {
 	int16_t y;
 };
 
+struct world_point3d {
+	int16_t x;
+	int16_t y;
+	int16_t z;
+};
+
+struct data_enemy {
+	uint64_t ticks_since_last_activation;
+	struct world_point3d sound_location;
+	int16_t type;
+	int16_t vitality;
+	int16_t flags;
+	int16_t path;
+	int16_t path_segment_length;
+	int16_t desired_height;
+	int16_t mode;
+	int16_t action;
+	int16_t target_index;
+	int16_t external_velocity;
+	int16_t vertical_velocity;
+	int16_t ticks_since_attack;
+	int16_t attack_repetitions;
+	int16_t changes_until_lock_lost;
+	int16_t elevation;
+	int16_t object_index;
+	int16_t activation_bias;
+	int16_t goal_polygon_index;
+	int16_t sound_polygon_index;
+	int16_t random_desired_height;
+	char explicit_padding_char[8];
+};
+
+struct data_projectile {
+	uint64_t damage_scale;
+	int16_t type;
+	int16_t object_index;
+	int16_t target_index;
+	int16_t elevation;
+	int16_t owner_index;
+	int16_t owner_type;
+	int16_t flags;
+	int16_t ticks_since_last_contrail;
+	int16_t contrail_count;
+	int16_t distance_travelled;
+	int16_t gravity;
+	int16_t permutation;
+};
+
+struct data_object {
+	uint32_t sound_pitch;
+	struct world_point3d location;
+	int16_t shape;
+	int16_t polygon;
+	int16_t facing;
+	int16_t sequence;
+	int16_t flags;
+	int16_t transfer_mode;
+	int16_t transfer_period;
+	int16_t transfer_phase;
+	int16_t permutation;
+	int16_t next_object;
+	int16_t parasitic_object;
+};
+
+struct data_endpoint_owner {
+	int16_t first_polygon_index;
+	int16_t polygon_index_count;
+	int16_t first_line_index;
+	int16_t line_index_count;
+};
+
+struct data_platform {
+	struct data_endpoint_owner endpoint_owners[MAX_VERTICES_PER_POLYGON];
+	uint64_t static_flags;
+	int16_t type;
+	int16_t speed;
+	int16_t delay;
+	int16_t minimum_floor_height;
+	int16_t maximum_floor_height;
+	int16_t minimum_ceiling_height;
+	int16_t maximum_ceiling_height;
+	int16_t polygon_index;
+	int16_t dynamic_flags;
+	int16_t floor_height;
+	int16_t ceiling_height;
+	int16_t ticks_until_restart;
+	int16_t parent_platform_index;
+	int16_t tag;
+	char explicit_padding[28];
+};
+
 struct data_game {
         uint64_t game_time_remaining;
         int32_t initial_random_seed;
@@ -117,9 +213,10 @@ struct data_dynamic {
 	int16_t polygon_count;
 	int16_t lightsource_count;
 	int16_t map_index_count;
-	int16_t ambient_sound_image_count, random_sound_image_count;
+	int16_t ambient_sound_image_count;
+	int16_t random_sound_image_count;
 	int16_t object_count;
-	int16_t monster_count;
+	int16_t enemy_count;
 	int16_t projectile_count;
 	int16_t effect_count;
 	int16_t light_count;
@@ -127,21 +224,29 @@ struct data_dynamic {
 	int16_t personal_annotation_count;
 	int16_t initial_objects_count;
 	int16_t garbage_object_count;
-	int16_t last_monster_index_to_get_time, last_monster_index_to_build_path;
-	int16_t new_monster_mangler_cookie, new_monster_vanishing_cookie;
+	int16_t last_enemy_index_to_get_time;
+	int16_t last_enemy_index_to_build_path;
+	int16_t new_enemy_mangler_cookie;
+	int16_t new_enemy_vanishing_cookie;
 	int16_t civilians_killed_by_players;
-	int16_t random_monsters_left[MAX_OBJECT_TYPES];
-	int16_t current_monster_count[MAX_OBJECT_TYPES];
+	int16_t random_enemys_left[MAX_OBJECT_TYPES];
+	int16_t current_enemy_count[MAX_OBJECT_TYPES];
 	int16_t random_items_left[MAX_OBJECT_TYPES];
 	int16_t current_item_count[MAX_OBJECT_TYPES];
 	int16_t current_level_number;
-	int16_t current_civilian_causalties, current_civilian_count;
-	int16_t total_civilian_causalties, total_civilian_count;
+	int16_t current_civilian_causalties;
+	int16_t current_civilian_count;
+	int16_t total_civilian_causalties;
+	int16_t total_civilian_count;
 	int16_t game_player_index;
 };
 
 static struct data_static *world_static = NULL;
 static struct data_dynamic *world_dynamic = NULL;
+static struct data_enemy *enemies = NULL;
+static struct data_projectile *projectiles = NULL;
+static struct data_object *objects = NULL;
+static struct data_platform *platforms = NULL;
 
 void *wad_extractTypeFromWad(uint64_t *length, struct wad const *wad, uint64_t wadDataType);
 void *wad_getDataFromPreferences(uint64_t preferences,
@@ -164,6 +269,10 @@ void wad_createEmptyWad(struct wad *wad);
 
 int main (void)
 {
+	printf("sizeof(struct data_enemy): %zu\n", sizeof(struct data_enemy));
+	printf("sizeof(struct data_projectile): %zu\n", sizeof(struct data_projectile));
+	printf("sizeof(struct data_platform): %zu\n", sizeof(struct data_platform));
+	printf("sizeof(struct data_object): %zu\n", sizeof(struct data_object));
 	printf("sizeof(struct data_static): %zu\n", sizeof(struct data_static));
 	printf("sizeof(struct wad_header): %zu\n", sizeof(struct wad_header));
 	char wadfile[FD_NAME_SIZE] = WAD_FILENAME;
@@ -283,6 +392,14 @@ void allocate_memory_map (void)
 {
 	world_static = (struct data_static*) malloc(sizeof(struct data_static));
 	world_dynamic = (struct data_dynamic*) malloc(sizeof(struct data_dynamic));
+	size_t sz_enemies = MAX_ENEMIES_PER_MAP * sizeof(struct data_enemy);
+	enemies = (struct data_enemy*) malloc(sz_enemies);
+	size_t sz_projectiles = MAX_PROJECTILES_PER_MAP * sizeof(struct data_projectile);
+	projectiles = (struct data_projectile*) malloc(sz_projectiles);
+	size_t sz_objects = MAX_OBJECTS_PER_MAP * sizeof(struct data_object);
+	objects = (struct data_object*) malloc(sz_objects);
+	size_t sz_platforms = MAX_PLATFORMS_PER_MAP * sizeof(struct data_platform);
+	platforms = (struct data_platform*) malloc(sz_platforms);
 }
 
 /*
