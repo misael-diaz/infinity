@@ -355,6 +355,7 @@ bool wad_writeWad(struct FileDescriptor *fd,
 		  struct wad *wad,
 		  uint64_t offset);
 void wad_createEmptyWad(struct wad *wad);
+void allocate_memory_map(void);
 
 #define WAD_FILENAME "wadfile.dat"
 
@@ -392,6 +393,7 @@ int main (void)
 	wad_writeWadHeader(&fd, &header);
 	wad_writeWad(&fd, &header, &wad, offset);
 	fclose(file);
+	allocate_memory_map();
 	Util_Clear();
 	return 0;
 }
