@@ -406,6 +406,7 @@ void *wad_extractTypeFromWad (uint64_t *length, struct wad const *wad, uint64_t 
 	return data;
 }
 
+/*
 void *wad_getDataFromPreferences (uint64_t tag,
 				  uint64_t expected_size,
 				  void (*initialize) (void *prefs),
@@ -414,6 +415,7 @@ void *wad_getDataFromPreferences (uint64_t tag,
 
 	return NULL;
 }
+*/
 
 void wad_fillDefaultWadHeader (struct FileDescriptor *fd,
 			       int16_t num_wads,
