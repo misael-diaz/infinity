@@ -10,6 +10,7 @@
 #define MAX_WADFILE_NAME_SIZE (MAX_WADFILE_NAME_LEN + 1)
 #define MAX_PLAYER_NAME_LEN MAX_WADFILE_NAME_LEN
 #define MAX_PLAYER_NAME_SIZE (MAX_WADFILE_NAME_LEN + 1)
+#define MAX_PRECALCULATION_TABLE_ENTRY_SIZE 64
 #define PREFERENCES_NAME_LEN 255
 #define PREFERENCES_NAME_SIZE (PREFERENCES_NAME_LEN + 1)
 #define FD_NAME_LEN MAX_WADFILE_NAME_LEN
@@ -17,6 +18,7 @@
 #define LEVEL_NAME_LEN MAX_WADFILE_NAME_LEN
 #define LEVEL_NAME_SIZE (LEVEL_NAME_LEN + 1)
 #define RENDER_FLAGS_BUFFER_SIZE (8 * 1024)
+#define MAX_NUM_ENTRIES_SCRATCH_TABLE 1024
 #define POLYGON_QUEUE_SIZE 256
 #define MAX_NUM_OBJECT_TYPES 64
 #define MAX_NUM_ENEMIES_PER_MAP 256
@@ -433,6 +435,9 @@ struct data_dynamic {
 	int16_t game_player_index;
 };
 
+static void* precalculation_table = NULL;
+static int16_t *scratch_table1 = NULL;
+static int16_t *scratch_table2 = NULL;
 static int16_t *render_flags = NULL;
 static int16_t *line_clip_ids = NULL;
 static int16_t *endpoint_coords = NULL;
@@ -477,6 +482,7 @@ void allocate_memory_map(void);
 void allocate_memory_render(void);
 void allocate_memory_path(void);
 void allocate_memory_flood_map(void);
+void allocate_texture_table(void);
 
 #define WAD_FILENAME "wadfile.dat"
 
@@ -519,6 +525,7 @@ int main (void)
 	allocate_memory_render();
 	allocate_memory_path();
 	allocate_memory_flood_map();
+	allocate_texture_table();
 	Util_Clear();
 	return 0;
 }
@@ -688,6 +695,16 @@ void allocate_memory_flood_map (void)
 	flood_nodes = (struct node_data*) Util_Malloc(sz_flood_nodes);
 	size_t sz_visited_polygons = MAX_NUM_POLYGONS_PER_MAP * sizeof(int16_t);
 	visited_polygons = (int16_t*) Util_Malloc(sz_visited_polygons);
+}
+
+void allocate_texture_table (void)
+{
+	size_t sz_scratch_table = MAX_NUM_ENTRIES_SCRATCH_TABLE * sizeof(int16_t);
+	scratch_table2 = (int16_t*) Util_Malloc(sz_scratch_table);
+	scratch_table1 = (int16_t*) Util_Malloc(sz_scratch_table);
+	size_t sz = (MAX_PRECALCULATION_TABLE_ENTRY_SIZE * MAX_NUM_ENTRIES_SCRATCH_TABLE);
+	precalculation_table = Util_Malloc(sz);
+
 }
 
 /*
