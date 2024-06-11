@@ -17,18 +17,22 @@
 #define LEVEL_NAME_LEN MAX_WADFILE_NAME_LEN
 #define LEVEL_NAME_SIZE (LEVEL_NAME_LEN + 1)
 #define RENDER_FLAGS_BUFFER_SIZE (8 * 1024)
+#define POLYGON_QUEUE_SIZE 256
 #define MAX_OBJECT_TYPES 64
 #define MAX_ENEMIES_PER_MAP 256
 #define MAX_PROJECTILES_PER_MAP 32
 #define MAX_PLATFORMS_PER_MAP 64
 #define MAX_OBJECTS_PER_MAP 512
 #define MAX_LINES_PER_MAP (4 * 1024)
+#define MAX_NUM_ENDPOINTS_PER_MAP (8 * 1024)
 #define MAX_NUM_NODES 512
 #define MAX_NUM_SORTED_NODES 128
 #define MAX_NUM_RENDER_OBJECTS 64
 #define MAX_NUM_ENDPOINT_CLIPS 64
+#define MAX_NUM_CLIPPING_WINDOWS 256
 #define MAX_NUM_LINE_CLIPS 256
 #define MAX_VERTICES_PER_POLYGON 8
+#define MAX_NUM_POLYGONS_PER_MAP 1024
 #define MAX_CLIPPING_LINES_PER_NODE (MAX_VERTICES_PER_POLYGON - 2)
 #define MAX_NUM_PLAYERS 8
 #define NUM_ITEMS 64
@@ -254,8 +258,8 @@ struct data_line_clip {
 	int16_t x1;
 };
 
-struct clipping_window_data {
-	struct clipping_window_data *next_window;
+struct data_clipping_window {
+	struct data_clipping_window *next_window;
 	struct vector2d left;
 	struct vector2d right;
 	struct vector2d top;
@@ -269,7 +273,7 @@ struct clipping_window_data {
 struct data_sorted_node {
         struct data_render_object *interior_objects;
         struct data_render_object *exterior_objects;
-        struct clipping_window_data *clipping_windows;
+        struct data_clipping_window *clipping_windows;
         int16_t polygon_index;
 };
 
@@ -295,7 +299,7 @@ struct rectangle_definition {
 
 struct data_render_object {
         struct data_sorted_node *node;
-        struct clipping_window_data *clipping_windows;
+        struct data_clipping_window *clipping_windows;
         struct data_render_object *next_object;
         struct rectangle_definition rectangle;
         int16_t ymedia;
@@ -422,7 +426,11 @@ struct data_dynamic {
 
 static int16_t *render_flags = NULL;
 static int16_t *line_clip_ids = NULL;
+static int16_t *endpoint_coords = NULL;
+static int16_t *polygon_queue = NULL;
+static struct data_sorted_node *node_polygon_mapper = NULL;
 static struct data_render_object *render_objects = NULL;
+static struct data_clipping_window *clipping_windows = NULL;
 static struct data_endpoint_clip *endpoint_clips = NULL;
 static struct data_line_clip *line_clips = NULL;
 static struct data_node *nodes = NULL;
@@ -613,6 +621,10 @@ void allocate_memory_render (void)
 	render_flags = (int16_t*) Util_Malloc(sz_render_flags);
 	size_t sz_line_clip_ids = MAX_LINES_PER_MAP * sizeof(int16_t);
 	line_clip_ids = (int16_t*) Util_Malloc(sz_line_clip_ids);
+	size_t sz_polygon_queue = POLYGON_QUEUE_SIZE * sizeof(int16_t);
+	polygon_queue = (int16_t*) Util_Malloc(sz_polygon_queue);
+	size_t sz_endpoint_coords = MAX_NUM_ENDPOINTS_PER_MAP * sizeof(int16_t);
+	endpoint_coords = (int16_t*) Util_Malloc(sz_endpoint_coords);
 	size_t sz_nodes = MAX_NUM_NODES * sizeof(struct data_node);
 	nodes = (struct data_node*) Util_Malloc(sz_nodes);
 	size_t sz_sorted_nodes = MAX_NUM_SORTED_NODES * sizeof(struct data_sorted_node);
@@ -626,6 +638,11 @@ void allocate_memory_render (void)
 	size_t szof_line_clip = sizeof(struct data_line_clip);
 	size_t sz_line_clips = MAX_NUM_LINE_CLIPS * szof_line_clip;
 	line_clips = (struct data_line_clip*) Util_Malloc(sz_line_clips);
+	size_t szof_clipping_window = sizeof(struct data_clipping_window);
+	size_t sz_clip_windows = MAX_NUM_CLIPPING_WINDOWS * szof_clipping_window;
+	clipping_windows = (struct data_clipping_window*) Util_Malloc(sz_clip_windows);
+	size_t sz_np_mapper = MAX_NUM_POLYGONS_PER_MAP * sizeof(struct data_sorted_node*);
+	node_polygon_mapper = (struct data_sorted_node**) Util_Malloc(sz_np_mapper);
 }
 
 /*
