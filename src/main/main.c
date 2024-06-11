@@ -22,8 +22,12 @@
 #define MAX_PROJECTILES_PER_MAP 32
 #define MAX_PLATFORMS_PER_MAP 64
 #define MAX_OBJECTS_PER_MAP 512
+#define MAX_LINES_PER_MAP (4 * 1024)
 #define MAX_NUM_NODES 512
 #define MAX_NUM_SORTED_NODES 128
+#define MAX_NUM_RENDER_OBJECTS 64
+#define MAX_NUM_ENDPOINT_CLIPS 64
+#define MAX_NUM_LINE_CLIPS 256
 #define MAX_VERTICES_PER_POLYGON 8
 #define MAX_CLIPPING_LINES_PER_NODE (MAX_VERTICES_PER_POLYGON - 2)
 #define MAX_NUM_PLAYERS 8
@@ -234,6 +238,22 @@ struct vector3d {
 	int16_t z;
 };
 
+struct data_endpoint_clip {
+	struct vector2d vector;
+	int16_t flags;
+	int16_t x;
+};
+
+struct data_line_clip {
+	struct vector2d top_vector;
+	struct vector2d bottom_vector;
+	int16_t top_y;
+	int16_t bottom_y;
+	int16_t flags;
+	int16_t x0;
+	int16_t x1;
+};
+
 struct clipping_window_data {
 	struct clipping_window_data *next_window;
 	struct vector2d left;
@@ -401,6 +421,10 @@ struct data_dynamic {
 };
 
 static int16_t *render_flags = NULL;
+static int16_t *line_clip_ids = NULL;
+static struct data_render_object *render_objects = NULL;
+static struct data_endpoint_clip *endpoint_clips = NULL;
+static struct data_line_clip *line_clips = NULL;
 static struct data_node *nodes = NULL;
 static struct data_sorted_node *sorted_nodes = NULL;
 static struct data_static *world_static = NULL;
@@ -428,6 +452,7 @@ bool wad_writeWad(struct FileDescriptor *fd,
 		  uint64_t offset);
 void wad_createEmptyWad(struct wad *wad);
 void allocate_memory_map(void);
+void allocate_memory_render(void);
 
 #define WAD_FILENAME "wadfile.dat"
 
@@ -466,6 +491,7 @@ int main (void)
 	wad_writeWad(&fd, &header, &wad, offset);
 	fclose(file);
 	allocate_memory_map();
+	allocate_memory_render();
 	Util_Clear();
 	return 0;
 }
@@ -585,10 +611,21 @@ void allocate_memory_render (void)
 {
 	size_t sz_render_flags = RENDER_FLAGS_BUFFER_SIZE * sizeof(int16_t);
 	render_flags = (int16_t*) Util_Malloc(sz_render_flags);
+	size_t sz_line_clip_ids = MAX_LINES_PER_MAP * sizeof(int16_t);
+	line_clip_ids = (int16_t*) Util_Malloc(sz_line_clip_ids);
 	size_t sz_nodes = MAX_NUM_NODES * sizeof(struct data_node);
 	nodes = (struct data_node*) Util_Malloc(sz_nodes);
 	size_t sz_sorted_nodes = MAX_NUM_SORTED_NODES * sizeof(struct data_sorted_node);
 	sorted_nodes = (struct data_sorted_node*) Util_Malloc(sz_sorted_nodes);
+	size_t szof_render_objects = sizeof(struct data_render_object);
+	size_t sz_render_objects = MAX_NUM_RENDER_OBJECTS * szof_render_objects;
+	render_objects = (struct data_render_object*) Util_Malloc(sz_render_objects);
+	size_t szof_endpoint_clip = sizeof(struct data_endpoint_clip);
+	size_t sz_endpoint_clips = MAX_NUM_ENDPOINT_CLIPS * szof_endpoint_clip;
+	endpoint_clips = (struct data_endpoint_clip*) Util_Malloc(sz_endpoint_clips);
+	size_t szof_line_clip = sizeof(struct data_line_clip);
+	size_t sz_line_clips = MAX_NUM_LINE_CLIPS * szof_line_clip;
+	line_clips = (struct data_line_clip*) Util_Malloc(sz_line_clips);
 }
 
 /*
