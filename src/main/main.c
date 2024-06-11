@@ -624,28 +624,37 @@ void allocate_memory_render (void)
 {
 	size_t sz_render_flags = RENDER_FLAGS_BUFFER_SIZE * sizeof(int16_t);
 	render_flags = (int16_t*) Util_Malloc(sz_render_flags);
+
 	size_t sz_line_clip_ids = MAX_NUM_LINES_PER_MAP * sizeof(int16_t);
 	line_clip_ids = (int16_t*) Util_Malloc(sz_line_clip_ids);
+
 	size_t sz_polygon_queue = POLYGON_QUEUE_SIZE * sizeof(int16_t);
 	polygon_queue = (int16_t*) Util_Malloc(sz_polygon_queue);
+
 	size_t sz_endpoint_coords = MAX_NUM_ENDPOINTS_PER_MAP * sizeof(int16_t);
 	endpoint_coords = (int16_t*) Util_Malloc(sz_endpoint_coords);
+
 	size_t sz_nodes = MAX_NUM_NODES * sizeof(struct data_node);
 	nodes = (struct data_node*) Util_Malloc(sz_nodes);
 	size_t sz_sorted_nodes = MAX_NUM_SORTED_NODES * sizeof(struct data_sorted_node);
 	sorted_nodes = (struct data_sorted_node*) Util_Malloc(sz_sorted_nodes);
+
 	size_t szof_render_objects = sizeof(struct data_render_object);
 	size_t sz_render_objects = MAX_NUM_RENDER_OBJECTS * szof_render_objects;
 	render_objects = (struct data_render_object*) Util_Malloc(sz_render_objects);
+
 	size_t szof_endpoint_clip = sizeof(struct data_endpoint_clip);
 	size_t sz_endpoint_clips = MAX_NUM_ENDPOINT_CLIPS * szof_endpoint_clip;
 	endpoint_clips = (struct data_endpoint_clip*) Util_Malloc(sz_endpoint_clips);
+
 	size_t szof_line_clip = sizeof(struct data_line_clip);
 	size_t sz_line_clips = MAX_NUM_LINE_CLIPS * szof_line_clip;
 	line_clips = (struct data_line_clip*) Util_Malloc(sz_line_clips);
+
 	size_t szof_clipping_window = sizeof(struct data_clipping_window);
 	size_t sz_clip_windows = MAX_NUM_CLIPPING_WINDOWS * szof_clipping_window;
 	clipping_windows = (struct data_clipping_window*) Util_Malloc(sz_clip_windows);
+
 	size_t sz_np_mapper = MAX_NUM_POLYGONS_PER_MAP * sizeof(struct data_sorted_node*);
 	node_polygon_mapper = (struct data_sorted_node**) Util_Malloc(sz_np_mapper);
 }
