@@ -23,6 +23,7 @@
 #define MAX_PLATFORMS_PER_MAP 64
 #define MAX_OBJECTS_PER_MAP 512
 #define MAX_NUM_NODES 512
+#define MAX_NUM_SORTED_NODES 128
 #define MAX_VERTICES_PER_POLYGON 8
 #define MAX_CLIPPING_LINES_PER_NODE (MAX_VERTICES_PER_POLYGON - 2)
 #define MAX_NUM_PLAYERS 8
@@ -66,11 +67,11 @@ struct entry_header {
 	uint64_t next_offset;
 };
 
-struct node_data {
-        struct node_data *parent;
-        struct node_data *siblings;
-        struct node_data *children;
-        struct node_data **reference;
+struct data_node {
+        struct data_node *parent;
+        struct data_node *siblings;
+        struct data_node *children;
+        struct data_node **reference;
         int16_t clipping_endpoints[MAX_CLIPPING_LINES_PER_NODE];
         int16_t clipping_lines[MAX_CLIPPING_LINES_PER_NODE];
         int16_t polygon_index;
@@ -245,7 +246,7 @@ struct clipping_window_data {
 	int16_t y1;
 };
 
-struct sorted_node_data {
+struct data_sorted_node {
         struct data_render_object *interior_objects;
         struct data_render_object *exterior_objects;
         struct clipping_window_data *clipping_windows;
@@ -273,7 +274,7 @@ struct rectangle_definition {
 };
 
 struct data_render_object {
-        struct sorted_node_data *node;
+        struct data_sorted_node *node;
         struct clipping_window_data *clipping_windows;
         struct data_render_object *next_object;
         struct rectangle_definition rectangle;
@@ -400,7 +401,8 @@ struct data_dynamic {
 };
 
 static int16_t *render_flags = NULL;
-static struct node_data *nodes = NULL;
+static struct data_node *nodes = NULL;
+static struct data_sorted_node *sorted_nodes = NULL;
 static struct data_static *world_static = NULL;
 static struct data_dynamic *world_dynamic = NULL;
 static struct data_enemy *enemies = NULL;
@@ -583,8 +585,10 @@ void allocate_memory_render (void)
 {
 	size_t sz_render_flags = RENDER_FLAGS_BUFFER_SIZE * sizeof(int16_t);
 	render_flags = (int16_t*) Util_Malloc(sz_render_flags);
-	size_t sz_nodes = MAX_NUM_NODES * sizeof(struct node_data);
-	nodes = (struct node_data*) Util_Malloc(sz_nodes);
+	size_t sz_nodes = MAX_NUM_NODES * sizeof(struct data_node);
+	nodes = (struct data_node*) Util_Malloc(sz_nodes);
+	size_t sz_sorted_nodes = MAX_NUM_SORTED_NODES * sizeof(struct data_sorted_node);
+	sorted_nodes = (struct data_sorted_node*) Util_Malloc(sz_sorted_nodes);
 }
 
 /*
