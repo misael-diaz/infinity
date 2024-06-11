@@ -16,12 +16,15 @@
 #define FD_NAME_SIZE (FD_NAME_LEN + 1)
 #define LEVEL_NAME_LEN MAX_WADFILE_NAME_LEN
 #define LEVEL_NAME_SIZE (LEVEL_NAME_LEN + 1)
+#define RENDER_FLAGS_BUFFER_SIZE (8 * 1024)
 #define MAX_OBJECT_TYPES 64
 #define MAX_ENEMIES_PER_MAP 256
 #define MAX_PROJECTILES_PER_MAP 32
 #define MAX_PLATFORMS_PER_MAP 64
 #define MAX_OBJECTS_PER_MAP 512
+#define MAX_NUM_NODES 512
 #define MAX_VERTICES_PER_POLYGON 8
+#define MAX_CLIPPING_LINES_PER_NODE (MAX_VERTICES_PER_POLYGON - 2)
 #define MAX_NUM_PLAYERS 8
 #define NUM_ITEMS 64
 
@@ -61,6 +64,19 @@ struct entry_header {
 	uint64_t length;
 	uint64_t offset;
 	uint64_t next_offset;
+};
+
+struct node_data {
+        struct node_data *parent;
+        struct node_data *siblings;
+        struct node_data *children;
+        struct node_data **reference;
+        int16_t clipping_endpoints[MAX_CLIPPING_LINES_PER_NODE];
+        int16_t clipping_lines[MAX_CLIPPING_LINES_PER_NODE];
+        int16_t polygon_index;
+        int16_t clipping_endpoint_count;
+        int16_t clipping_line_count;
+        int16_t flags;
 };
 
 struct FileDescriptor {
@@ -206,10 +222,62 @@ struct damage_record {
 	int16_t kills;
 };
 
+struct vector2d {
+	int16_t x;
+	int16_t y;
+};
+
 struct vector3d {
 	int16_t x;
 	int16_t y;
 	int16_t z;
+};
+
+struct clipping_window_data {
+	struct clipping_window_data *next_window;
+	struct vector2d left;
+	struct vector2d right;
+	struct vector2d top;
+	struct vector2d bottom;
+	int16_t x0;
+	int16_t x1;
+	int16_t y0;
+	int16_t y1;
+};
+
+struct sorted_node_data {
+        struct data_render_object *interior_objects;
+        struct data_render_object *exterior_objects;
+        struct clipping_window_data *clipping_windows;
+        int16_t polygon_index;
+};
+
+struct rectangle_definition {
+	struct bitmap_definition *texture;
+	void *shading_tables;
+	int16_t flags;
+	int16_t x0;
+	int16_t y0;
+	int16_t x1;
+	int16_t y1;
+	int16_t clip_left;
+	int16_t clip_right;
+	int16_t clip_top;
+	int16_t clip_bottom;
+	int16_t depth;
+	int16_t ambient_shade;
+	int16_t transfer_mode;
+	int16_t transfer_data;
+	bool flip_vertical;
+	bool flip_horizontal;
+};
+
+struct data_render_object {
+        struct sorted_node_data *node;
+        struct clipping_window_data *clipping_windows;
+        struct data_render_object *next_object;
+        struct rectangle_definition rectangle;
+        int16_t ymedia;
 };
 
 struct physics_variables {
@@ -331,6 +399,8 @@ struct data_dynamic {
 	int16_t game_player_index;
 };
 
+static int16_t *render_flags = NULL;
+static struct node_data *nodes = NULL;
 static struct data_static *world_static = NULL;
 static struct data_dynamic *world_dynamic = NULL;
 static struct data_enemy *enemies = NULL;
@@ -507,6 +577,14 @@ void allocate_memory_map (void)
 	platforms = (struct data_platform*) Util_Malloc(sz_platforms);
 	size_t sz_players = MAX_NUM_PLAYERS * sizeof(struct data_player);
 	players = (struct data_player*) Util_Malloc(sz_players);
+}
+
+void allocate_memory_render (void)
+{
+	size_t sz_render_flags = RENDER_FLAGS_BUFFER_SIZE * sizeof(int16_t);
+	render_flags = (int16_t*) Util_Malloc(sz_render_flags);
+	size_t sz_nodes = MAX_NUM_NODES * sizeof(struct node_data);
+	nodes = (struct node_data*) Util_Malloc(sz_nodes);
 }
 
 /*
