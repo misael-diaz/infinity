@@ -7,6 +7,7 @@
 
 #include "util.h"
 
+#define TICKS_PER_SECOND 30
 #define INPUT_NUM_KEYS 21
 #define GAMMA_NUM_LEVELS 8
 #define GAMMA_DEFAULT_LEVEL 2
@@ -71,6 +72,14 @@ enum {
 	_cybermaxx_input,
 	_input_sprocket_yaw_pitch,
 } InputDevices;
+
+enum {
+        _appletalk_remote,
+        _localtalk,
+        _tokentalk,
+        _ethernet,
+        NUMBER_OF_NETWORK_TYPES
+} NetworkTypes;
 
 enum {
 	_absolute_yaw_mode_bit,
@@ -148,6 +157,37 @@ enum {
 	_sidestepping = _sidestepping_left | _sidestepping_right,
 	_looking_vertically = _looking_up | _looking_down | _looking_center
 } ActionFlags;
+
+enum {
+	_game_of_kill_monsters,
+	_game_of_cooperative_play,
+	_game_of_capture_the_flag,
+	_game_of_king_of_the_hill,
+	_game_of_kill_man_with_ball,
+	_game_of_defense,
+	_game_of_rugby,
+	_game_of_tag,
+	NUMBER_OF_GAME_TYPES
+} GameTypes;
+
+enum {
+	_multiplayer_game = 0x0001,
+	_ammo_replenishes = 0x0002,
+	_weapons_replenish = 0x0004,
+	_specials_replenish = 0x0008,
+	_monsters_replenish = 0x0010,
+	_motion_sensor_does_not_work = 0x00020,
+	_overhead_map_is_omniscient = 0x0040,
+	_burn_items_on_death = 0x0080,
+	_live_network_stats = 0x0100,
+	_game_has_kill_limit = 0x0200,
+	_force_unique_teams = 0x0400,
+	_dying_is_penalized = 0x0800,
+	_suicide_is_penalized = 0x1000,
+	_overhead_map_shows_items = 0x2000,
+	_overhead_map_shows_monsters = 0x4000,
+	_overhead_map_shows_projectiles = 0x8000
+} GameOptions;
 
 enum TAG {
 	NETWORK_TAG,
@@ -251,6 +291,19 @@ struct data_preferences_graphics {
 	struct GraphicsDeviceSpecification device_spec;
 	bool do_resolution_switching;
 	char explicit_padding[31];
+};
+
+struct data_preferences_network {
+        int64_t time_limit;
+        int16_t type;
+        int16_t game_type;
+        int16_t difficulty_level;
+        int16_t game_options;
+        int16_t kill_limit;
+        int16_t entry_point;
+        bool allow_microphone;
+        bool game_is_untimed;
+	int64_t: 64;
 };
 
 struct data_preferences_player {
@@ -607,6 +660,7 @@ static struct data_object *objects = NULL;
 static struct data_platform *platforms = NULL;
 static struct data_player *players = NULL;
 static struct preferences *preferences = NULL;
+static struct data_preferences_network *preferences_network = NULL;
 static struct data_preferences_graphics *preferences_graphics = NULL;
 static struct data_preferences_player *preferences_player = NULL;
 static struct data_preferences_input *preferences_input = NULL;
@@ -705,6 +759,8 @@ int main (void)
 	sizeof(struct data_preferences_graphics));
 	printf("sizeof(struct data_preferences_player): %zu\n",
 	sizeof(struct data_preferences_player));
+	printf("sizeof(struct data_preferences_network): %zu\n",
+	sizeof(struct data_preferences_network));
 
 	if (INPUT_NUM_KEYS != NUMBER_OF_STANDARD_KEY_DEFINITIONS) {
 		fprintf(stderr, "main: NumInputKeysError");
@@ -932,6 +988,8 @@ void allocate_memory_preferences (void)
 	preferences_player = (struct data_preferences_player*) Util_Malloc(sz_player);
 	size_t sz_input = sizeof(struct data_preferences_input);
 	preferences_input = (struct data_preferences_input*) Util_Malloc(sz_input);
+	size_t sz_network = sizeof(struct data_preferences_network);
+	preferences_network = (struct data_preferences_network*) Util_Malloc(sz_network);
 }
 
 void default_preferences_graphics (struct data_preferences_graphics *preferences_graphics)
@@ -973,6 +1031,28 @@ void default_preferences_input (struct data_preferences_input *preferences_input
 	preferences_input->input_device = _keyboard_or_game_pad;
 	input_set_default_keys(preferences_input);
 }
+
+void default_preferences_network (struct data_preferences_network *preferences)
+{
+	preferences->type = _ethernet;
+	preferences->allow_microphone = true;
+	preferences->game_is_untimed = false;
+	preferences->difficulty_level = 2;
+	preferences->game_options = _multiplayer_game     |
+				    _ammo_replenishes     |
+				    _weapons_replenish    |
+				    _specials_replenish   |
+				    _monsters_replenish   |
+				    _burn_items_on_death  |
+				    _suicide_is_penalized |
+				    _force_unique_teams   |
+				    _live_network_stats;
+	preferences->time_limit = 10 * TICKS_PER_SECOND * 60;
+	preferences->kill_limit = 10;
+	preferences->entry_point = 0;
+	preferences->game_type = _game_of_kill_monsters;
+}
+
 
 /*
 
