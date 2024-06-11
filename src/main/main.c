@@ -531,7 +531,7 @@ void allocate_memory_path(void);
 void allocate_memory_flood_map(void);
 void allocate_texture_table(void);
 void allocate_memory_preferences(void);
-void default_graphics_preferences(struct data_preferences_graphics *preferences_graphics);
+void default_preferences_graphics(struct data_preferences_graphics *preferences_graphics);
 void default_preferences_player(struct data_preferences_player *preferences_player);
 
 #define WAD_FILENAME "wadfile.dat"
@@ -584,7 +584,7 @@ int main (void)
 	allocate_memory_flood_map();
 	allocate_texture_table();
 	allocate_memory_preferences();
-	default_graphics_preferences(preferences_graphics);
+	default_preferences_graphics(preferences_graphics);
 	default_preferences_player(preferences_player);
 	Util_Clear();
 	return 0;
@@ -775,7 +775,7 @@ void allocate_memory_preferences (void)
 	preferences_player = (struct data_preferences_player*) Util_Malloc(sz_player);
 }
 
-void default_graphics_preferences (struct data_preferences_graphics *preferences_graphics)
+void default_preferences_graphics (struct data_preferences_graphics *preferences_graphics)
 {
 	preferences_graphics->device_spec.slot = DEVICE_NONE;
 	preferences_graphics->device_spec.flags = DEVICE_COLOR_FLAG;
