@@ -605,7 +605,8 @@ void allocate_memory_map (void)
 	world_dynamic = (struct data_dynamic*) Util_Malloc(sizeof(struct data_dynamic));
 	size_t sz_enemies = MAX_NUM_ENEMIES_PER_MAP * sizeof(struct data_enemy);
 	enemies = (struct data_enemy*) Util_Malloc(sz_enemies);
-	size_t sz_projectiles = MAX_NUM_PROJECTILES_PER_MAP * sizeof(struct data_projectile);
+	size_t szof_projectile = sizeof(struct data_projectile);
+	size_t sz_projectiles = MAX_NUM_PROJECTILES_PER_MAP * szof_projectile;
 	projectiles = (struct data_projectile*) Util_Malloc(sz_projectiles);
 	size_t sz_objects = MAX_NUM_OBJECTS_PER_MAP * sizeof(struct data_object);
 	objects = (struct data_object*) Util_Malloc(sz_objects);
