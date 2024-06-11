@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
 
 #include "util.h"
 
@@ -149,13 +150,14 @@ struct data_preferences_graphics {
 	char explicit_padding[31];
 };
 
-struct player_preferences {
-	uint64_t last_time_exec;
+struct data_preferences_player {
+	time_t last_time_exec;
 	int16_t difficulty_level;
 	int16_t color;
 	int16_t team;
-	char name[PREFERENCES_NAME_SIZE];
 	bool background_music_enabled;
+	char name[PREFERENCES_NAME_SIZE];
+	char explicit_padding[240];
 };
 
 struct data_static {
@@ -503,6 +505,7 @@ static struct data_platform *platforms = NULL;
 static struct data_player *players = NULL;
 static struct preferences *preferences = NULL;
 static struct data_preferences_graphics *preferences_graphics = NULL;
+static struct data_preferences_player *preferences_player = NULL;
 
 void *wad_extractTypeFromWad(uint64_t *length,
 			     struct wad const *wad,
@@ -529,6 +532,7 @@ void allocate_memory_flood_map(void);
 void allocate_texture_table(void);
 void allocate_memory_preferences(void);
 void default_graphics_preferences(struct data_preferences_graphics *preferences_graphics);
+void default_preferences_player(struct data_preferences_player *preferences_player);
 
 #define WAD_FILENAME "wadfile.dat"
 
@@ -548,6 +552,8 @@ int main (void)
 	sizeof(struct GraphicsDeviceSpecification));
 	printf("sizeof(struct data_preferences_graphics): %zu\n",
 	sizeof(struct data_preferences_graphics));
+	printf("sizeof(struct data_preferences_player): %zu\n",
+	sizeof(struct data_preferences_player));
 	char wadfile[FD_NAME_SIZE] = WAD_FILENAME;
 	FILE *file = fopen(wadfile, "w");
 	if (!file) {
@@ -579,6 +585,7 @@ int main (void)
 	allocate_texture_table();
 	allocate_memory_preferences();
 	default_graphics_preferences(preferences_graphics);
+	default_preferences_player(preferences_player);
 	Util_Clear();
 	return 0;
 }
@@ -764,6 +771,8 @@ void allocate_memory_preferences (void)
 {
 	size_t sz = sizeof(struct data_preferences_graphics);
 	preferences_graphics = (struct data_preferences_graphics*) Util_Malloc(sz);
+	size_t sz_player = sizeof(struct data_preferences_player);
+	preferences_player = (struct data_preferences_player*) Util_Malloc(sz_player);
 }
 
 void default_graphics_preferences (struct data_preferences_graphics *preferences_graphics)
@@ -781,6 +790,15 @@ void default_graphics_preferences (struct data_preferences_graphics *preferences
 	preferences_graphics->screen_mode.bit_depth = 8;
 	preferences_graphics->do_resolution_switching = false;
 	preferences_graphics->screen_mode.draw_every_other_line = false;
+}
+
+void default_preferences_player (struct data_preferences_player *preferences_player)
+{
+	memset(preferences_player, 0, sizeof(*preferences_player));
+	preferences_player->last_time_exec = time(NULL);
+	preferences_player->difficulty_level = 2;
+	strncpy(preferences_player->name, "infinity", PREFERENCES_NAME_SIZE);
+	preferences_player->name[PREFERENCES_NAME_LEN] = '\0';
 }
 
 /*
