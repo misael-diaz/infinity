@@ -443,7 +443,9 @@ static struct data_object *objects = NULL;
 static struct data_platform *platforms = NULL;
 static struct data_player *players = NULL;
 
-void *wad_extractTypeFromWad(uint64_t *length, struct wad const *wad, uint64_t wadDataType);
+void *wad_extractTypeFromWad(uint64_t *length,
+			     struct wad const *wad,
+			     uint64_t wadDataType);
 void *wad_getDataFromPreferences(uint64_t preferences,
 				 uint64_t expected_size,
 				 void (*initialize) (void *prefs),
@@ -504,7 +506,9 @@ int main (void)
 	return 0;
 }
 
-void *wad_extractTypeFromWad (uint64_t *length, struct wad const *wad, uint64_t wadDataType)
+void *wad_extractTypeFromWad (uint64_t *length,
+			      struct wad const *wad,
+			      uint64_t wadDataType)
 {
 	*length = ((uint64_t) 0);
 	void *data = NULL;
