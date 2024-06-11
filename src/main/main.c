@@ -6,6 +6,10 @@
 
 #include "util.h"
 
+#define GAMMA_NUM_LEVELS 8
+#define GAMMA_DEFAULT_LEVEL 2
+#define DEVICE_NONE 0xffff
+#define DEVICE_COLOR_FLAG 0x0001
 #define MAX_WADFILE_NAME_LEN 63
 #define MAX_WADFILE_NAME_SIZE (MAX_WADFILE_NAME_LEN + 1)
 #define MAX_PLAYER_NAME_LEN MAX_WADFILE_NAME_LEN
@@ -41,6 +45,18 @@
 #define MAX_NUM_PLAYERS 8
 #define MAX_NUM_ITEMS 64
 #define MAX_NUM_PATHS 20
+
+enum {
+	_full_screen,
+	_100_percent,
+	_75_percent,
+	_50_percent
+} ScreenSize;
+
+enum {
+	_no_acceleration,
+	_valkyrie_acceleration
+} HardwareAcceleration;
 
 enum TAG {
 	NETWORK_TAG,
@@ -105,6 +121,34 @@ struct preferences {
 	struct wad *wad;
 };
 
+struct data_screen_mode {
+	int16_t size;
+	int16_t acceleration;
+	int16_t bit_depth;
+	int16_t gamma_level;
+	bool high_resolution;
+	bool texture_floor;
+	bool texture_ceiling;
+	bool draw_every_other_line;
+	char explicit_padding_char[4];
+};
+
+struct GraphicsDeviceSpecification {
+        int16_t slot;
+        int16_t flags;
+        int16_t bit_depth;
+        int16_t width;
+	int16_t height;
+	char explicit_padding[6];
+} GDSpec;
+
+struct data_preferences_graphics {
+	struct data_screen_mode screen_mode;
+	struct GraphicsDeviceSpecification device_spec;
+	bool do_resolution_switching;
+	char explicit_padding[31];
+};
+
 struct player_preferences {
 	uint64_t last_time_exec;
 	int16_t difficulty_level;
@@ -113,8 +157,6 @@ struct player_preferences {
 	char name[PREFERENCES_NAME_SIZE];
 	bool background_music_enabled;
 };
-
-static struct preferences *preferences = NULL;
 
 struct data_static {
         uint64_t entry_point_flags;
@@ -399,7 +441,7 @@ struct data_dynamic {
 	uint32_t random_seed;
 	int16_t player_count;
 	int16_t speaking_player_index;
-	int16_t unused;
+	int16_t explicit_padding;
 	int16_t platform_count;
 	int16_t endpoint_count;
 	int16_t line_count;
@@ -443,7 +485,7 @@ static int16_t *line_clip_ids = NULL;
 static int16_t *endpoint_coords = NULL;
 static int16_t *polygon_queue = NULL;
 static int16_t *visited_polygons = NULL;
-static struct data_sorted_node *node_polygon_mapper = NULL;
+static struct data_sorted_node **node_polygon_mapper = NULL;
 static struct data_render_object *render_objects = NULL;
 static struct data_clipping_window *clipping_windows = NULL;
 static struct data_endpoint_clip *endpoint_clips = NULL;
@@ -459,6 +501,8 @@ static struct data_projectile *projectiles = NULL;
 static struct data_object *objects = NULL;
 static struct data_platform *platforms = NULL;
 static struct data_player *players = NULL;
+static struct preferences *preferences = NULL;
+static struct data_preferences_graphics *preferences_graphics = NULL;
 
 void *wad_extractTypeFromWad(uint64_t *length,
 			     struct wad const *wad,
@@ -483,6 +527,8 @@ void allocate_memory_render(void);
 void allocate_memory_path(void);
 void allocate_memory_flood_map(void);
 void allocate_texture_table(void);
+void allocate_memory_preferences(void);
+void default_graphics_preferences(struct data_preferences_graphics *preferences_graphics);
 
 #define WAD_FILENAME "wadfile.dat"
 
@@ -497,6 +543,11 @@ int main (void)
 	printf("sizeof(struct data_object): %zu\n", sizeof(struct data_object));
 	printf("sizeof(struct data_static): %zu\n", sizeof(struct data_static));
 	printf("sizeof(struct wad_header): %zu\n", sizeof(struct wad_header));
+	printf("sizeof(struct data_screen_mode): %zu\n", sizeof(struct data_screen_mode));
+	printf("sizeof(struct GraphicsDeviceSpecification): %zu\n",
+	sizeof(struct GraphicsDeviceSpecification));
+	printf("sizeof(struct data_preferences_graphics): %zu\n",
+	sizeof(struct data_preferences_graphics));
 	char wadfile[FD_NAME_SIZE] = WAD_FILENAME;
 	FILE *file = fopen(wadfile, "w");
 	if (!file) {
@@ -526,6 +577,8 @@ int main (void)
 	allocate_memory_path();
 	allocate_memory_flood_map();
 	allocate_texture_table();
+	allocate_memory_preferences();
+	default_graphics_preferences(preferences_graphics);
 	Util_Clear();
 	return 0;
 }
@@ -692,7 +745,7 @@ void allocate_memory_path (void)
 void allocate_memory_flood_map (void)
 {
 	size_t sz_flood_nodes = MAX_NUM_FLOOD_NODES * sizeof(struct data_node);
-	flood_nodes = (struct node_data*) Util_Malloc(sz_flood_nodes);
+	flood_nodes = (struct data_node*) Util_Malloc(sz_flood_nodes);
 	size_t sz_visited_polygons = MAX_NUM_POLYGONS_PER_MAP * sizeof(int16_t);
 	visited_polygons = (int16_t*) Util_Malloc(sz_visited_polygons);
 }
@@ -705,6 +758,29 @@ void allocate_texture_table (void)
 	size_t sz = (MAX_PRECALCULATION_TABLE_ENTRY_SIZE * MAX_NUM_ENTRIES_SCRATCH_TABLE);
 	precalculation_table = Util_Malloc(sz);
 
+}
+
+void allocate_memory_preferences (void)
+{
+	size_t sz = sizeof(struct data_preferences_graphics);
+	preferences_graphics = (struct data_preferences_graphics*) Util_Malloc(sz);
+}
+
+void default_graphics_preferences (struct data_preferences_graphics *preferences_graphics)
+{
+	preferences_graphics->device_spec.slot = DEVICE_NONE;
+	preferences_graphics->device_spec.flags = DEVICE_COLOR_FLAG;
+	preferences_graphics->device_spec.bit_depth = 8;
+	preferences_graphics->device_spec.width = 640;
+	preferences_graphics->device_spec.height = 480;
+
+	preferences_graphics->screen_mode.gamma_level = GAMMA_DEFAULT_LEVEL;
+	preferences_graphics->screen_mode.size = _100_percent;
+	preferences_graphics->screen_mode.high_resolution = true;
+	preferences_graphics->screen_mode.acceleration = _no_acceleration;
+	preferences_graphics->screen_mode.bit_depth = 8;
+	preferences_graphics->do_resolution_switching = false;
+	preferences_graphics->screen_mode.draw_every_other_line = false;
 }
 
 /*
