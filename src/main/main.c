@@ -18,12 +18,12 @@
 #define LEVEL_NAME_SIZE (LEVEL_NAME_LEN + 1)
 #define RENDER_FLAGS_BUFFER_SIZE (8 * 1024)
 #define POLYGON_QUEUE_SIZE 256
-#define MAX_OBJECT_TYPES 64
-#define MAX_ENEMIES_PER_MAP 256
-#define MAX_PROJECTILES_PER_MAP 32
-#define MAX_PLATFORMS_PER_MAP 64
-#define MAX_OBJECTS_PER_MAP 512
-#define MAX_LINES_PER_MAP (4 * 1024)
+#define MAX_NUM_OBJECT_TYPES 64
+#define MAX_NUM_ENEMIES_PER_MAP 256
+#define MAX_NUM_PROJECTILES_PER_MAP 32
+#define MAX_NUM_PLATFORMS_PER_MAP 64
+#define MAX_NUM_OBJECTS_PER_MAP 512
+#define MAX_NUM_LINES_PER_MAP (4 * 1024)
 #define MAX_NUM_ENDPOINTS_PER_MAP (8 * 1024)
 #define MAX_NUM_NODES 512
 #define MAX_NUM_SORTED_NODES 128
@@ -31,11 +31,11 @@
 #define MAX_NUM_ENDPOINT_CLIPS 64
 #define MAX_NUM_CLIPPING_WINDOWS 256
 #define MAX_NUM_LINE_CLIPS 256
-#define MAX_VERTICES_PER_POLYGON 8
+#define MAX_NUM_VERTICES_PER_POLYGON 8
 #define MAX_NUM_POLYGONS_PER_MAP 1024
-#define MAX_CLIPPING_LINES_PER_NODE (MAX_VERTICES_PER_POLYGON - 2)
+#define MAX_NUM_CLIPPING_LINES_PER_NODE (MAX_NUM_VERTICES_PER_POLYGON - 2)
 #define MAX_NUM_PLAYERS 8
-#define NUM_ITEMS 64
+#define MAX_NUM_ITEMS 64
 
 enum TAG {
 	NETWORK_TAG,
@@ -80,8 +80,8 @@ struct data_node {
         struct data_node *siblings;
         struct data_node *children;
         struct data_node **reference;
-        int16_t clipping_endpoints[MAX_CLIPPING_LINES_PER_NODE];
-        int16_t clipping_lines[MAX_CLIPPING_LINES_PER_NODE];
+        int16_t clipping_endpoints[MAX_NUM_CLIPPING_LINES_PER_NODE];
+        int16_t clipping_lines[MAX_NUM_CLIPPING_LINES_PER_NODE];
         int16_t polygon_index;
         int16_t clipping_endpoint_count;
         int16_t clipping_line_count;
@@ -200,7 +200,7 @@ struct data_endpoint_owner {
 };
 
 struct data_platform {
-	struct data_endpoint_owner endpoint_owners[MAX_VERTICES_PER_POLYGON];
+	struct data_endpoint_owner endpoint_owners[MAX_NUM_VERTICES_PER_POLYGON];
 	uint64_t static_flags;
 	int16_t type;
 	int16_t speed;
@@ -339,7 +339,7 @@ struct data_player {
 	struct damage_record monster_damage_given;
 	struct world_point3d location;
 	struct world_point3d camera_location;
-	int16_t items[NUM_ITEMS];
+	int16_t items[MAX_NUM_ITEMS];
 	uint64_t ticks_at_last_successful_save;
 	uint64_t netgame_parameters[2];
 	int16_t identifier;
@@ -412,10 +412,10 @@ struct data_dynamic {
 	int16_t new_enemy_mangler_cookie;
 	int16_t new_enemy_vanishing_cookie;
 	int16_t civilians_killed_by_players;
-	int16_t random_enemys_left[MAX_OBJECT_TYPES];
-	int16_t current_enemy_count[MAX_OBJECT_TYPES];
-	int16_t random_items_left[MAX_OBJECT_TYPES];
-	int16_t current_item_count[MAX_OBJECT_TYPES];
+	int16_t random_enemys_left[MAX_NUM_OBJECT_TYPES];
+	int16_t current_enemy_count[MAX_NUM_OBJECT_TYPES];
+	int16_t random_items_left[MAX_NUM_OBJECT_TYPES];
+	int16_t current_item_count[MAX_NUM_OBJECT_TYPES];
 	int16_t current_level_number;
 	int16_t current_civilian_causalties;
 	int16_t current_civilian_count;
@@ -603,13 +603,13 @@ void allocate_memory_map (void)
 {
 	world_static = (struct data_static*) Util_Malloc(sizeof(struct data_static));
 	world_dynamic = (struct data_dynamic*) Util_Malloc(sizeof(struct data_dynamic));
-	size_t sz_enemies = MAX_ENEMIES_PER_MAP * sizeof(struct data_enemy);
+	size_t sz_enemies = MAX_NUM_ENEMIES_PER_MAP * sizeof(struct data_enemy);
 	enemies = (struct data_enemy*) Util_Malloc(sz_enemies);
-	size_t sz_projectiles = MAX_PROJECTILES_PER_MAP * sizeof(struct data_projectile);
+	size_t sz_projectiles = MAX_NUM_PROJECTILES_PER_MAP * sizeof(struct data_projectile);
 	projectiles = (struct data_projectile*) Util_Malloc(sz_projectiles);
-	size_t sz_objects = MAX_OBJECTS_PER_MAP * sizeof(struct data_object);
+	size_t sz_objects = MAX_NUM_OBJECTS_PER_MAP * sizeof(struct data_object);
 	objects = (struct data_object*) Util_Malloc(sz_objects);
-	size_t sz_platforms = MAX_PLATFORMS_PER_MAP * sizeof(struct data_platform);
+	size_t sz_platforms = MAX_NUM_PLATFORMS_PER_MAP * sizeof(struct data_platform);
 	platforms = (struct data_platform*) Util_Malloc(sz_platforms);
 	size_t sz_players = MAX_NUM_PLAYERS * sizeof(struct data_player);
 	players = (struct data_player*) Util_Malloc(sz_players);
@@ -619,7 +619,7 @@ void allocate_memory_render (void)
 {
 	size_t sz_render_flags = RENDER_FLAGS_BUFFER_SIZE * sizeof(int16_t);
 	render_flags = (int16_t*) Util_Malloc(sz_render_flags);
-	size_t sz_line_clip_ids = MAX_LINES_PER_MAP * sizeof(int16_t);
+	size_t sz_line_clip_ids = MAX_NUM_LINES_PER_MAP * sizeof(int16_t);
 	line_clip_ids = (int16_t*) Util_Malloc(sz_line_clip_ids);
 	size_t sz_polygon_queue = POLYGON_QUEUE_SIZE * sizeof(int16_t);
 	polygon_queue = (int16_t*) Util_Malloc(sz_polygon_queue);
