@@ -25,7 +25,9 @@
 #define MAX_NUM_OBJECTS_PER_MAP 512
 #define MAX_NUM_LINES_PER_MAP (4 * 1024)
 #define MAX_NUM_ENDPOINTS_PER_MAP (8 * 1024)
+#define MAX_NUM_POINTS_PER_PATH 63
 #define MAX_NUM_NODES 512
+#define MAX_NUM_FLOOD_NODES 255
 #define MAX_NUM_SORTED_NODES 128
 #define MAX_NUM_RENDER_OBJECTS 64
 #define MAX_NUM_ENDPOINT_CLIPS 64
@@ -36,6 +38,7 @@
 #define MAX_NUM_CLIPPING_LINES_PER_NODE (MAX_NUM_VERTICES_PER_POLYGON - 2)
 #define MAX_NUM_PLAYERS 8
 #define MAX_NUM_ITEMS 64
+#define MAX_NUM_PATHS 20
 
 enum TAG {
 	NETWORK_TAG,
@@ -123,20 +126,26 @@ struct data_static {
         char explicit_padding_char[40];
 };
 
-struct world_point2d {
+struct point2d {
 	int16_t x;
 	int16_t y;
 };
 
-struct world_point3d {
+struct point3d {
 	int16_t x;
 	int16_t y;
 	int16_t z;
 };
 
+struct path {
+	struct point2d points[MAX_NUM_POINTS_PER_PATH];
+	int16_t current_step;
+	int16_t step_count;
+};
+
 struct data_enemy {
 	uint64_t ticks_since_last_activation;
-	struct world_point3d sound_location;
+	struct point3d sound_location;
 	int16_t type;
 	int16_t vitality;
 	int16_t flags;
@@ -178,7 +187,7 @@ struct data_projectile {
 
 struct data_object {
 	uint32_t sound_pitch;
-	struct world_point3d location;
+	struct point3d location;
 	int16_t shape;
 	int16_t polygon;
 	int16_t facing;
@@ -306,8 +315,8 @@ struct data_render_object {
 };
 
 struct physics_variables {
-	struct world_point3d last_position;
-	struct world_point3d position;
+	struct point3d last_position;
+	struct point3d position;
 	struct vector3d external_velocity;
 	int16_t head_direction;
 	int16_t last_direction;
@@ -337,8 +346,8 @@ struct data_player {
 	struct damage_record total_damage_given;
 	struct damage_record monster_damage_taken;
 	struct damage_record monster_damage_given;
-	struct world_point3d location;
-	struct world_point3d camera_location;
+	struct point3d location;
+	struct point3d camera_location;
 	int16_t items[MAX_NUM_ITEMS];
 	uint64_t ticks_at_last_successful_save;
 	uint64_t netgame_parameters[2];
@@ -383,7 +392,7 @@ struct data_game {
 
 struct data_dynamic {
 	struct data_game game_information;
-	struct world_point2d game_beacon;
+	struct point2d game_beacon;
 	uint64_t tick_count;
 	uint32_t random_seed;
 	int16_t player_count;
@@ -428,13 +437,16 @@ static int16_t *render_flags = NULL;
 static int16_t *line_clip_ids = NULL;
 static int16_t *endpoint_coords = NULL;
 static int16_t *polygon_queue = NULL;
+static int16_t *visited_polygons = NULL;
 static struct data_sorted_node *node_polygon_mapper = NULL;
 static struct data_render_object *render_objects = NULL;
 static struct data_clipping_window *clipping_windows = NULL;
 static struct data_endpoint_clip *endpoint_clips = NULL;
 static struct data_line_clip *line_clips = NULL;
 static struct data_node *nodes = NULL;
+static struct data_node *flood_nodes = NULL;
 static struct data_sorted_node *sorted_nodes = NULL;
+static struct path *paths = NULL;
 static struct data_static *world_static = NULL;
 static struct data_dynamic *world_dynamic = NULL;
 static struct data_enemy *enemies = NULL;
@@ -463,11 +475,14 @@ bool wad_writeWad(struct FileDescriptor *fd,
 void wad_createEmptyWad(struct wad *wad);
 void allocate_memory_map(void);
 void allocate_memory_render(void);
+void allocate_memory_path(void);
+void allocate_memory_flood_map(void);
 
 #define WAD_FILENAME "wadfile.dat"
 
 int main (void)
 {
+	printf("sizeof(struct path): %zu\n", sizeof(struct path));
 	printf("sizeof(struct action_queue): %zu\n", sizeof(struct action_queue));
 	printf("sizeof(struct data_player): %zu\n", sizeof(struct data_player));
 	printf("sizeof(struct data_enemy): %zu\n", sizeof(struct data_enemy));
@@ -502,6 +517,8 @@ int main (void)
 	fclose(file);
 	allocate_memory_map();
 	allocate_memory_render();
+	allocate_memory_path();
+	allocate_memory_flood_map();
 	Util_Clear();
 	return 0;
 }
@@ -657,6 +674,20 @@ void allocate_memory_render (void)
 
 	size_t sz_np_mapper = MAX_NUM_POLYGONS_PER_MAP * sizeof(struct data_sorted_node*);
 	node_polygon_mapper = (struct data_sorted_node**) Util_Malloc(sz_np_mapper);
+}
+
+void allocate_memory_path (void)
+{
+	size_t sz_paths = MAX_NUM_PATHS * sizeof(struct path);
+	paths = (struct path*) Util_Malloc(sz_paths);
+}
+
+void allocate_memory_flood_map (void)
+{
+	size_t sz_flood_nodes = MAX_NUM_FLOOD_NODES * sizeof(struct data_node);
+	flood_nodes = (struct node_data*) Util_Malloc(sz_flood_nodes);
+	size_t sz_visited_polygons = MAX_NUM_POLYGONS_PER_MAP * sizeof(int16_t);
+	visited_polygons = (int16_t*) Util_Malloc(sz_visited_polygons);
 }
 
 /*
