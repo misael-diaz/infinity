@@ -27,6 +27,7 @@
 #define MAX_NUM_ENDPOINTS_PER_MAP (8 * 1024)
 #define MAX_NUM_POINTS_PER_PATH 63
 #define MAX_NUM_NODES 512
+#define MAX_NUM_FLOOD_NODES 255
 #define MAX_NUM_SORTED_NODES 128
 #define MAX_NUM_RENDER_OBJECTS 64
 #define MAX_NUM_ENDPOINT_CLIPS 64
@@ -37,6 +38,7 @@
 #define MAX_NUM_CLIPPING_LINES_PER_NODE (MAX_NUM_VERTICES_PER_POLYGON - 2)
 #define MAX_NUM_PLAYERS 8
 #define MAX_NUM_ITEMS 64
+#define MAX_NUM_PATHS 20
 
 enum TAG {
 	NETWORK_TAG,
@@ -435,13 +437,16 @@ static int16_t *render_flags = NULL;
 static int16_t *line_clip_ids = NULL;
 static int16_t *endpoint_coords = NULL;
 static int16_t *polygon_queue = NULL;
+static int16_t *visited_polygons = NULL;
 static struct data_sorted_node *node_polygon_mapper = NULL;
 static struct data_render_object *render_objects = NULL;
 static struct data_clipping_window *clipping_windows = NULL;
 static struct data_endpoint_clip *endpoint_clips = NULL;
 static struct data_line_clip *line_clips = NULL;
 static struct data_node *nodes = NULL;
+static struct data_node *flood_nodes = NULL;
 static struct data_sorted_node *sorted_nodes = NULL;
+static struct path *paths = NULL;
 static struct data_static *world_static = NULL;
 static struct data_dynamic *world_dynamic = NULL;
 static struct data_enemy *enemies = NULL;
@@ -470,6 +475,8 @@ bool wad_writeWad(struct FileDescriptor *fd,
 void wad_createEmptyWad(struct wad *wad);
 void allocate_memory_map(void);
 void allocate_memory_render(void);
+void allocate_memory_path(void);
+void allocate_memory_flood_map(void);
 
 #define WAD_FILENAME "wadfile.dat"
 
@@ -510,6 +517,8 @@ int main (void)
 	fclose(file);
 	allocate_memory_map();
 	allocate_memory_render();
+	allocate_memory_path();
+	allocate_memory_flood_map();
 	Util_Clear();
 	return 0;
 }
@@ -665,6 +674,20 @@ void allocate_memory_render (void)
 
 	size_t sz_np_mapper = MAX_NUM_POLYGONS_PER_MAP * sizeof(struct data_sorted_node*);
 	node_polygon_mapper = (struct data_sorted_node**) Util_Malloc(sz_np_mapper);
+}
+
+void allocate_memory_path (void)
+{
+	size_t sz_paths = MAX_NUM_PATHS * sizeof(struct path);
+	paths = (struct path*) Util_Malloc(sz_paths);
+}
+
+void allocate_memory_flood_map (void)
+{
+	size_t sz_flood_nodes = MAX_NUM_FLOOD_NODES * sizeof(struct data_node);
+	flood_nodes = (struct node_data*) Util_Malloc(sz_flood_nodes);
+	size_t sz_visited_polygons = MAX_NUM_POLYGONS_PER_MAP * sizeof(int16_t);
+	visited_polygons = (int16_t*) Util_Malloc(sz_visited_polygons);
 }
 
 /*
