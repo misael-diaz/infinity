@@ -7,6 +7,7 @@
 
 #include "util.h"
 
+#define INPUT_NUM_KEYS 21
 #define GAMMA_NUM_LEVELS 8
 #define GAMMA_DEFAULT_LEVEL 2
 #define DEVICE_NONE 0xffff
@@ -47,6 +48,10 @@
 #define MAX_NUM_ITEMS 64
 #define MAX_NUM_PATHS 20
 
+#define NUMBER_OF_STANDARD_KEY_DEFINITIONS (\
+	sizeof(standard_key_definitions) / sizeof(struct key_definition)\
+)
+
 enum {
 	_full_screen,
 	_100_percent,
@@ -58,6 +63,91 @@ enum {
 	_no_acceleration,
 	_valkyrie_acceleration
 } HardwareAcceleration;
+
+enum {
+	_keyboard_or_game_pad,
+	_mouse_yaw_pitch,
+	_mouse_yaw_velocity,
+	_cybermaxx_input,
+	_input_sprocket_yaw_pitch,
+} InputDevices;
+
+enum {
+	_absolute_yaw_mode_bit,
+	_turning_left_bit,
+	_turning_right_bit,
+	_sidestep_dont_turn_bit,
+	_looking_left_bit,
+	_looking_right_bit,
+	_absolute_yaw_bit0,
+	_absolute_yaw_bit1,
+
+	_absolute_pitch_mode_bit,
+	_looking_up_bit,
+	_looking_down_bit,
+	_looking_center_bit,
+	_absolute_pitch_bit0,
+	_absolute_pitch_bit1,
+
+	_absolute_position_mode_bit,
+	_moving_forward_bit,
+	_moving_backward_bit,
+	_run_dont_walk_bit,
+	_look_dont_turn_bit,
+	_absolute_position_bit0,
+	_absolute_position_bit1,
+	_absolute_position_bit2,
+
+	_sidestepping_left_bit,
+	_sidestepping_right_bit,
+	_left_trigger_state_bit,
+	_right_trigger_state_bit,
+	_action_trigger_state_bit,
+	_cycle_weapons_forward_bit,
+	_cycle_weapons_backward_bit,
+	_toggle_map_bit,
+	_microphone_button_bit,
+	_swim_bit,
+
+	NUMBER_OF_ACTION_FLAG_BITS
+} ActionFlagBitOffsets;
+
+enum {
+	_absolute_yaw_mode = (1 << _absolute_yaw_mode_bit),
+	_turning_left = (1 << _turning_left_bit),
+	_turning_right = (1 << _turning_right_bit),
+	_sidestep_dont_turn = (1 << _sidestep_dont_turn_bit),
+	_looking_left = (1 << _looking_left_bit),
+	_looking_right = (1 << _looking_right_bit),
+
+	_absolute_pitch_mode = (1 << _absolute_pitch_mode_bit),
+	_looking_up = (1 << _looking_up_bit),
+	_looking_down = (1 << _looking_down_bit),
+	_looking_center = (1 << _looking_center_bit),
+	_look_dont_turn = (1 << _look_dont_turn_bit),
+
+	_absolute_position_mode = (1 << _absolute_position_mode_bit),
+	_moving_forward = (1 << _moving_forward_bit),
+	_moving_backward = (1 << _moving_backward_bit),
+	_run_dont_walk = (1 << _run_dont_walk_bit),
+
+	_sidestepping_left = (1 << _sidestepping_left_bit),
+	_sidestepping_right = (1 << _sidestepping_right_bit),
+	_left_trigger_state = (1 << _left_trigger_state_bit),
+	_right_trigger_state = (1 << _right_trigger_state_bit),
+	_action_trigger_state = (1 << _action_trigger_state_bit),
+	_cycle_weapons_forward = (1 << _cycle_weapons_forward_bit),
+	_cycle_weapons_backward = (1 << _cycle_weapons_backward_bit),
+	_toggle_map = (1 << _toggle_map_bit),
+	_microphone_button = (1 << _microphone_button_bit),
+	_swim = (1 << _swim_bit),
+
+	_turning = _turning_left | _turning_right,
+	_looking = _looking_left | _looking_right,
+	_moving = _moving_forward | _moving_backward,
+	_sidestepping = _sidestepping_left | _sidestepping_right,
+	_looking_vertically = _looking_up | _looking_down | _looking_center
+} ActionFlags;
 
 enum TAG {
 	NETWORK_TAG,
@@ -120,6 +210,19 @@ struct FileDescriptor {
 struct preferences {
 	struct FileDescriptor fd;
 	struct wad *wad;
+};
+
+struct key_definition {
+	int16_t offset;
+	int64_t action_flag;
+	int16_t: 16;
+	int32_t: 32;
+	int32_t: 32;
+};
+
+struct data_preferences_input {
+        int16_t keycodes[INPUT_NUM_KEYS];
+        int16_t input_device;
 };
 
 struct data_screen_mode {
@@ -506,6 +609,51 @@ static struct data_player *players = NULL;
 static struct preferences *preferences = NULL;
 static struct data_preferences_graphics *preferences_graphics = NULL;
 static struct data_preferences_player *preferences_player = NULL;
+static struct data_preferences_input *preferences_input = NULL;
+
+static struct key_definition standard_key_definitions[] = {
+
+	/* keypad */
+	{.offset = 0x5b, .action_flag = _moving_forward},
+	{.offset = 0x57, .action_flag = _moving_backward},
+	{.offset = 0x56, .action_flag = _turning_left},
+	{.offset = 0x58, .action_flag = _turning_right},
+
+	/* zx translation */
+	{.offset = 0x06, .action_flag = _sidestepping_left},
+	{.offset = 0x07, .action_flag = _sidestepping_right},
+
+	/* as looking */
+	{.offset = 0x00, .action_flag = _looking_left},
+	{.offset = 0x01, .action_flag = _looking_right},
+
+	/* dcv vertical looking */
+	{.offset = 0x02, .action_flag = _looking_up},
+	{.offset = 0x08, .action_flag = _looking_down},
+	{.offset = 0x09, .action_flag = _looking_center},
+
+	/* KP7/KP9 for weapon cycling */
+	{.offset = 0x59, .action_flag = _cycle_weapons_backward},
+	{.offset = 0x5c, .action_flag = _cycle_weapons_forward},
+
+	/* space for primary trigger, option for alternate trigger */
+	{.offset = 0x31, .action_flag = _left_trigger_state},
+	{.offset = 0x3a, .action_flag = _right_trigger_state},
+
+	/* shift, control and command modifiers */
+	{.offset = 0x37, .action_flag = _sidestep_dont_turn},
+	{.offset = 0x3b, .action_flag = _run_dont_walk},
+	{.offset = 0x38, .action_flag = _look_dont_turn},
+
+	/* tab for action */
+	{.offset = 0x30, .action_flag = _action_trigger_state},
+
+	/* m for toggle between normal and overhead map view */
+	{.offset = 0x2e, .action_flag = _toggle_map},
+
+	/* ` for using the microphone */
+	{.offset = 0x32, .action_flag = _microphone_button}
+};
 
 void *wad_extractTypeFromWad(uint64_t *length,
 			     struct wad const *wad,
@@ -533,12 +681,15 @@ void allocate_texture_table(void);
 void allocate_memory_preferences(void);
 void default_preferences_graphics(struct data_preferences_graphics *preferences_graphics);
 void default_preferences_player(struct data_preferences_player *preferences_player);
+void default_preferences_input(struct data_preferences_input *preferences_input);
 
 #define WAD_FILENAME "wadfile.dat"
 
 int main (void)
 {
+	printf("number of stdkey defs: %zu\n", NUMBER_OF_STANDARD_KEY_DEFINITIONS);
 	printf("sizeof(struct path): %zu\n", sizeof(struct path));
+	printf("sizeof(struct key_definition): %zu\n", sizeof(struct key_definition));
 	printf("sizeof(struct action_queue): %zu\n", sizeof(struct action_queue));
 	printf("sizeof(struct data_player): %zu\n", sizeof(struct data_player));
 	printf("sizeof(struct data_enemy): %zu\n", sizeof(struct data_enemy));
@@ -554,6 +705,12 @@ int main (void)
 	sizeof(struct data_preferences_graphics));
 	printf("sizeof(struct data_preferences_player): %zu\n",
 	sizeof(struct data_preferences_player));
+
+	if (INPUT_NUM_KEYS != NUMBER_OF_STANDARD_KEY_DEFINITIONS) {
+		fprintf(stderr, "main: NumInputKeysError");
+		exit(EXIT_FAILURE);
+	}
+
 	char wadfile[FD_NAME_SIZE] = WAD_FILENAME;
 	FILE *file = fopen(wadfile, "w");
 	if (!file) {
@@ -773,6 +930,8 @@ void allocate_memory_preferences (void)
 	preferences_graphics = (struct data_preferences_graphics*) Util_Malloc(sz);
 	size_t sz_player = sizeof(struct data_preferences_player);
 	preferences_player = (struct data_preferences_player*) Util_Malloc(sz_player);
+	size_t sz_input = sizeof(struct data_preferences_input);
+	preferences_input = (struct data_preferences_input*) Util_Malloc(sz_input);
 }
 
 void default_preferences_graphics (struct data_preferences_graphics *preferences_graphics)
@@ -799,6 +958,20 @@ void default_preferences_player (struct data_preferences_player *preferences_pla
 	preferences_player->difficulty_level = 2;
 	strncpy(preferences_player->name, "infinity", PREFERENCES_NAME_SIZE);
 	preferences_player->name[PREFERENCES_NAME_LEN] = '\0';
+}
+
+void input_set_default_keys (struct data_preferences_input *preferences_input)
+{
+	int16_t *keycodes = preferences_input->keycodes;
+	for (int16_t i = 0; i != NUMBER_OF_STANDARD_KEY_DEFINITIONS; ++i) {
+		keycodes[i] = standard_key_definitions[i].offset;
+	}
+}
+
+void default_preferences_input (struct data_preferences_input *preferences_input)
+{
+	preferences_input->input_device = _keyboard_or_game_pad;
+	input_set_default_keys(preferences_input);
 }
 
 /*
