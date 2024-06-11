@@ -25,6 +25,7 @@
 #define MAX_NUM_OBJECTS_PER_MAP 512
 #define MAX_NUM_LINES_PER_MAP (4 * 1024)
 #define MAX_NUM_ENDPOINTS_PER_MAP (8 * 1024)
+#define MAX_NUM_POINTS_PER_PATH 63
 #define MAX_NUM_NODES 512
 #define MAX_NUM_SORTED_NODES 128
 #define MAX_NUM_RENDER_OBJECTS 64
@@ -123,20 +124,26 @@ struct data_static {
         char explicit_padding_char[40];
 };
 
-struct world_point2d {
+struct point2d {
 	int16_t x;
 	int16_t y;
 };
 
-struct world_point3d {
+struct point3d {
 	int16_t x;
 	int16_t y;
 	int16_t z;
 };
 
+struct path {
+	struct point2d points[MAX_NUM_POINTS_PER_PATH];
+	int16_t current_step;
+	int16_t step_count;
+};
+
 struct data_enemy {
 	uint64_t ticks_since_last_activation;
-	struct world_point3d sound_location;
+	struct point3d sound_location;
 	int16_t type;
 	int16_t vitality;
 	int16_t flags;
@@ -178,7 +185,7 @@ struct data_projectile {
 
 struct data_object {
 	uint32_t sound_pitch;
-	struct world_point3d location;
+	struct point3d location;
 	int16_t shape;
 	int16_t polygon;
 	int16_t facing;
@@ -306,8 +313,8 @@ struct data_render_object {
 };
 
 struct physics_variables {
-	struct world_point3d last_position;
-	struct world_point3d position;
+	struct point3d last_position;
+	struct point3d position;
 	struct vector3d external_velocity;
 	int16_t head_direction;
 	int16_t last_direction;
@@ -337,8 +344,8 @@ struct data_player {
 	struct damage_record total_damage_given;
 	struct damage_record monster_damage_taken;
 	struct damage_record monster_damage_given;
-	struct world_point3d location;
-	struct world_point3d camera_location;
+	struct point3d location;
+	struct point3d camera_location;
 	int16_t items[MAX_NUM_ITEMS];
 	uint64_t ticks_at_last_successful_save;
 	uint64_t netgame_parameters[2];
@@ -383,7 +390,7 @@ struct data_game {
 
 struct data_dynamic {
 	struct data_game game_information;
-	struct world_point2d game_beacon;
+	struct point2d game_beacon;
 	uint64_t tick_count;
 	uint32_t random_seed;
 	int16_t player_count;
@@ -468,6 +475,7 @@ void allocate_memory_render(void);
 
 int main (void)
 {
+	printf("sizeof(struct path): %zu\n", sizeof(struct path));
 	printf("sizeof(struct action_queue): %zu\n", sizeof(struct action_queue));
 	printf("sizeof(struct data_player): %zu\n", sizeof(struct data_player));
 	printf("sizeof(struct data_enemy): %zu\n", sizeof(struct data_enemy));
