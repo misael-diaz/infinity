@@ -733,9 +733,7 @@ void allocate_memory_path(void);
 void allocate_memory_flood_map(void);
 void allocate_texture_table(void);
 void allocate_memory_preferences(void);
-void default_preferences_graphics(struct data_preferences_graphics *preferences_graphics);
-void default_preferences_player(struct data_preferences_player *preferences_player);
-void default_preferences_input(struct data_preferences_input *preferences_input);
+void initialize_preferences(void);
 
 #define WAD_FILENAME "wadfile.dat"
 
@@ -797,8 +795,7 @@ int main (void)
 	allocate_memory_flood_map();
 	allocate_texture_table();
 	allocate_memory_preferences();
-	default_preferences_graphics(preferences_graphics);
-	default_preferences_player(preferences_player);
+	initialize_preferences();
 	Util_Clear();
 	return 0;
 }
@@ -1051,6 +1048,14 @@ void default_preferences_network (struct data_preferences_network *preferences)
 	preferences->kill_limit = 10;
 	preferences->entry_point = 0;
 	preferences->game_type = _game_of_kill_monsters;
+}
+
+void initialize_preferences (void)
+{
+	default_preferences_network(preferences_network);
+	default_preferences_graphics(preferences_graphics);
+	default_preferences_player(preferences_player);
+	default_preferences_input(preferences_input);
 }
 
 
