@@ -15,3 +15,4 @@
 
 CC = gcc-10
 CCOPT = -g -Wall -Wextra -Wformat -O0
+LIBS = -L/usr/lib/x86_64-linux-gnu -lglfw -lGL

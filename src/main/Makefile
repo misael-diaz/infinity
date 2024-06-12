@@ -19,7 +19,7 @@ include make-inc
 all: $(BIN)
 
 $(BIN): $(MAIN_O)
-	$(CC) $(CCOPT) $(OBJECTS_O) -o $(BIN)
+	$(CC) $(CCOPT) $(OBJECTS_O) -o $(BIN) $(LIBS)
 
 $(MAIN_O): $(HEADERS) $(MAIN_C)
 	$(CC) $(INC) $(CCOPT) -c $(MAIN_C) -o $(MAIN_O)

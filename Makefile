@@ -18,6 +18,7 @@ include make-inc
 
 export CC
 export CCOPT
+export LIBS
 
 all: srcs
 

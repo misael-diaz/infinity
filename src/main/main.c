@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
+#include <GLFW/glfw3.h>
 
 #include "util.h"
 
@@ -734,6 +735,8 @@ void allocate_memory_flood_map(void);
 void allocate_texture_table(void);
 void allocate_memory_preferences(void);
 void initialize_preferences(void);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow *window);
 
 #define WAD_FILENAME "wadfile.dat"
 
@@ -796,8 +799,38 @@ int main (void)
 	allocate_texture_table();
 	allocate_memory_preferences();
 	initialize_preferences();
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	GLFWwindow* window = glfwCreateWindow(800, 600, "INFINITY", NULL, NULL);
+	if (window == NULL) {
+		fprintf(stderr, "Failed to create GLFW window\n");
+		glfwTerminate();
+		return EXIT_FAILURE;
+	}
+	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	while (!glfwWindowShouldClose(window)) {
+		processInput(window);
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+	glfwTerminate();
 	Util_Clear();
 	return 0;
+}
+
+void framebuffer_size_callback (GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
+void processInput (GLFWwindow *window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, true);
+	}
 }
 
 void *wad_extractTypeFromWad (uint64_t *length,
